@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý khóa học - Admin</title>
+    <!-- Boxicons -->
+    <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- Dark Mode Script -->
+    <script src="/js/darkmode.js"></script>
+    
+    <style>
+        /* Modern Course Management Styles */
+        .page-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            border-radius: 0 0 20px 20px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stats-card {
+            background: var(--bg-primary);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px var(--shadow);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--accent-color);
+        }
+        
+        .stats-card.primary::before { background: #007bff; }
+        .stats-card.success::before { background: #28a745; }
+        .stats-card.info::before { background: #17a2b8; }
+        .stats-card.warning::before { background: #ffc107; }
+        
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px var(--shadow);
+        }
+        
+        .stats-card .stats-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            margin-bottom: 1rem;
+        }
+        
+        .stats-card.primary .stats-icon { background: #007bff; }
+        .stats-card.success .stats-icon { background: #28a745; }
+        .stats-card.info .stats-icon { background: #17a2b8; }
+        .stats-card.warning .stats-icon { background: #ffc107; }
+        
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+        }
+        
+        .stats-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin: 0;
+        }
+        
+        /* Search and Filter Section */
+        .search-filter-section {
+            background: var(--bg-primary);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px var(--shadow);
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+        }
+        
+        .search-filter-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+        
+        .search-filter-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .search-filter-count {
+            background: var(--bg-tertiary);
+            color: #1976d2;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            border: 1px solid var(--border-color);
+        }
+        
+        body.dark .search-filter-count {
+            background: rgba(25, 118, 210, 0.2);
+            color: #64b5f6;
+        }
+        
+        .filter-controls {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr auto;
+            gap: 1rem;
+            align-items: end;
+        }
+        
+        .form-group {
+            margin-bottom: 0;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-control, .form-select {
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+        
+        .form-control::placeholder {
+            color: var(--text-secondary);
+        }
+        
+        .search-input-group {
+            position: relative;
+        }
+        
+        .search-input-group .form-control {
+            padding-right: 3rem;
+        }
+        
+        .search-input-group .search-icon {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            pointer-events: none;
+        }
+        
+        /* Filter Results */
+        .filter-results {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-top: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text-primary);
+        }
+        
+        .filter-results.hidden {
+            display: none;
+        }
+        
+        /* Course Grid */
+        .courses-section {
+            background: var(--bg-primary);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px var(--shadow);
+        }
+        
+        .courses-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+        
+        .courses-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+        
+        .course-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .course-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px var(--shadow);
+            border-color: #007bff;
+        }
+        
+        .course-card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            position: relative;
+        }
+        
+        .course-status {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .course-status.published { background: #d4edda; color: #155724; }
+        .course-status.draft { background: #f8d7da; color: #721c24; }
+        .course-status.pending { background: #d1ecf1; color: #0c5460; }
+        .course-status.archived { background: #fff3cd; color: #856404; }
+        .course-status.rejected { background: #f5c6cb; color: #721c24; }
+        
+        .course-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+        }
+        
+        .course-instructor {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .course-card-body {
+            padding: 1.5rem;
+        }
+        
+        .course-description {
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+        
+        .course-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+        
+        .course-stat {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .course-stat-number {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #007bff;
+            display: block;
+        }
+        
+        .course-stat-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+        
+        .course-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn-action {
+            flex: 1;
+            min-width: 0;
+            padding: 0.5rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.25rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-action:hover {
+            transform: translateY(-2px);
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-secondary);
+        }
+        
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        
+        .empty-state-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .empty-state-text {
+            margin-bottom: 2rem;
+        }
+        
+        /* Loading State */
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 15px;
+        }
+        
+        .loading-spinner {
+            width: 3rem;
+            height: 3rem;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .filter-controls {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .course-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .courses-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 1rem;
+            }
+            
+            .course-actions {
+                flex-direction: column;
+            }
+            
+            .btn-action {
+                flex: none;
+            }
+        }
+        
+        /* Highlight Search Terms */
+        mark {
+            background: linear-gradient(120deg, #a8e6cf 0%, #dcedc1 100%);
+            color: #2d5016;
+            padding: 0.1rem 0.2rem;
+            border-radius: 3px;
+            font-weight: 600;
+        }
+        
+        body.dark mark {
+            background: linear-gradient(120deg, rgba(168, 230, 207, 0.3) 0%, rgba(220, 237, 193, 0.3) 100%);
+            color: #a8e6cf;
+        }
+        
+        /* Animation for new content */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .upload-area {
+            border: 2px dashed #007bff;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: var(--bg-tertiary);
+        }
+        
+        .upload-area:hover {
+            border-color: #0056b3;
+            background-color: var(--bg-secondary);
+        }
+        
+        .upload-content i {
+            font-size: 2rem;
+            color: #007bff;
+        }
+        
+        .upload-content {
+            color: var(--text-primary);
+        }
+        
+        .image-preview {
+            margin-top: 15px;
+            text-align: center;
+        }
+        
+        .image-upload-section {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            background-color: var(--bg-tertiary);
+        }
+        
+        /* Modal dark mode support */
+        .modal-content {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+        }
+        
+        .modal-header {
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .modal-title {
+            color: var(--text-primary);
+        }
+        
+        .modal-body {
+            color: var(--text-primary);
+        }
+        
+        .modal-footer {
+            border-top: 1px solid var(--border-color);
+        }
+        
+        /* Button styles for dark mode */
+        .btn-outline-secondary {
+            border-color: var(--border-color);
+            color: var(--text-primary);
+        }
+        
+        .btn-outline-secondary:hover {
+            background-color: var(--bg-secondary);
+            border-color: var(--border-color);
+            color: var(--text-primary);
+        }
+        
+        /* Dark mode adjustments */
+        body.dark .stats-card {
+            background: var(--bg-primary);
+        }
+        
+        body.dark .search-filter-section {
+            background: var(--bg-primary);
+        }
+        
+        body.dark .courses-section {
+            background: var(--bg-primary);
+        }
+        
+        body.dark .course-card {
+            background: var(--bg-secondary);
+        }
+        
+        body.dark .upload-area {
+            background-color: var(--bg-tertiary);
+        }
+        
+        body.dark .image-upload-section {
+            background-color: var(--bg-tertiary);
+        }
+    </style>
+</head>
+<body>
+    <!-- SIDEBAR -->
+    <div th:replace="~{fragment/sidebar :: sidebar(role=${user.role}, user=${user})}"></div>
+
+    <!-- CONTENT -->
+    <section id="content">
+        <!-- NAVBAR -->
+        <nav th:replace="~{fragment/navbar :: navbar}"></nav>
+
+        <!-- MAIN -->
+        <main>
+            <!-- Page Header -->
+            <div class="page-header">
+                <div class="container-fluid">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h1 class="mb-2">
+                                <i class="fas fa-graduation-cap me-3"></i>
+                                Quản lý khóa học
+                            </h1>
+                            <nav aria-label="breadcrumb" >
+                                <ol class="breadcrumb mb-0" >
+                                    <li class="breadcrumb-item">
+                                        <a href="/admin/dashboard"  >
+                                            <i class="fas fa-home" ></i> Dashboard
+                                        </a>
+                        </li>
+                                    <li class="breadcrumb-item  " >Khóa học</li>
+                                </ol>
+                            </nav>
+                        </div>
+                        <button class="btn btn-light btn-lg" data-bs-toggle="modal" data-bs-target="#createCourseModal">
+                            <i class="fas fa-plus me-2"></i>
+                            Thêm khóa học mới
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container-fluid">
+                <!-- Statistics Cards -->
+                <div class="stats-grid">
+                    <div class="stats-card primary">
+                        <div class="stats-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <h3 class="stats-number" id="totalCourses">0</h3>
+                        <p class="stats-label">Tổng số khóa học</p>
+                            </div>
+                    <div class="stats-card success">
+                        <div class="stats-icon">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </div>
+                        <h3 class="stats-number" id="totalTeachers">0</h3>
+                        <p class="stats-label">Tổng số giảng viên</p>
+                    </div>
+                    <div class="stats-card info">
+                        <div class="stats-icon">
+                            <i class="fas fa-user-graduate"></i>
+                </div>
+                        <h3 class="stats-number" id="totalStudents">0</h3>
+                        <p class="stats-label">Tổng số học viên</p>
+                            </div>
+                    <div class="stats-card warning">
+                        <div class="stats-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <h3 class="stats-number" id="pendingCount">0</h3>
+                        <p class="stats-label">Chờ phê duyệt</p>
+                    </div>
+                </div>
+
+                <!-- Search and Filter Section -->
+                <div class="search-filter-section">
+                    <div class="search-filter-header">
+                        <h2 class="search-filter-title">
+                            <i class="fas fa-search"></i>
+                            Tìm kiếm và lọc khóa học
+                        </h2>
+                        <div class="search-filter-count" id="courseCount">
+                            <span id="totalCoursesCount">0</span> khóa học
+                        </div>
+                    </div>
+                    
+                    <div class="filter-controls">
+                        <div class="form-group">
+                            <label class="form-label">Tìm kiếm</label>
+                            <div class="search-input-group">
+                                <input type="text" id="searchInput" class="form-control" 
+                                       placeholder="Tìm theo tên khóa học, mô tả, giảng viên...">
+                                <i class="fas fa-search search-icon"></i>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Trạng thái</label>
+                            <select id="statusFilter" class="form-select">
+                                <option value="">Tất cả trạng thái</option>
+                                <option value="PENDING">Chờ phê duyệt</option>
+                                <option value="PUBLISHED">Đã xuất bản</option>
+                                <option value="DRAFT">Bản nháp</option>
+                                <option value="ARCHIVED">Đã lưu trữ</option>
+                                <option value="REJECTED">Bị từ chối</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Giảng viên</label>
+                            <select id="teacherFilter" class="form-select">
+                                <option value="">Tất cả giảng viên</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-outline-secondary btn-lg" onclick="clearFilters()">
+                                <i class="fas fa-times"></i>
+                                Xóa bộ lọc
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Filter Results -->
+                    <div class="filter-results hidden" id="filterInfo">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-info-circle text-info me-2"></i>
+                            <span id="filterResultText">Tìm thấy 0 khóa học</span>
+                </div>
+                        <button class="btn btn-link btn-sm" onclick="clearFilters()">
+                            <i class="fas fa-times"></i> Xóa bộ lọc
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Courses Section -->
+                <div class="courses-section">
+                    <div class="courses-header">
+                        <h2 class="courses-title">
+                            <i class="fas fa-list me-2"></i>
+                            Danh sách khóa học
+                        </h2>
+                    </div>
+                    
+                    <!-- Course Grid -->
+                    <div class="course-grid" id="courseList">
+                        <!-- Course cards will be loaded here -->
+                        <div class="loading-overlay">
+                            <div class="spinner-border loading-spinner text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </section>
+
+    <!-- Create Course Modal -->
+    <div class="modal fade" id="createCourseModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">
+                        <i class="fas fa-plus me-2"></i>
+                        Thêm khóa học mới
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="createCourseForm" class="needs-validation" novalidate>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Tiêu đề khóa học</label>
+                                <input type="text" class="form-control" name="title" required>
+                                <div class="invalid-feedback">Vui lòng nhập tiêu đề khóa học</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Giảng viên</label>
+                                <select class="form-select" name="teacherEmail" required>
+                                    <option value="">Chọn giảng viên</option>
+                                </select>
+                                <div class="invalid-feedback">Vui lòng chọn giảng viên</div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Hình ảnh khóa học</label>
+                                <div class="image-upload-section">
+                                    <div class="mb-2">
+                                        <input type="url" class="form-control" name="image" placeholder="https://example.com/image.jpg">
+                                        <div class="form-text">Nhập URL hình ảnh đại diện cho khóa học</div>
+                                    </div>
+                                    <div class="text-center my-2">
+                                        <span class="text-muted">hoặc</span>
+                                    </div>
+                                    <div class="upload-area" onclick="document.getElementById('courseImageUpload').click()">
+                                        <input type="file" id="courseImageUpload" accept="image/*" style="display: none;">
+                                        <div class="upload-content">
+                                            <i class="fas fa-cloud-upload-alt mb-2"></i>
+                                            <p class="mb-0">Nhấp để chọn ảnh từ máy tính</p>
+                                            <small class="text-muted">JPG, PNG, GIF (tối đa 5MB)</small>
+                                        </div>
+                                    </div>
+                                    <div class="image-preview" id="imagePreview" style="display: none;">
+                                        <img id="previewImg" src="" alt="Preview" style="max-width: 100%; height: auto; border-radius: 8px;">
+                                        <button type="button" class="btn btn-sm btn-danger mt-2" onclick="clearImagePreview()">
+                                            <i class="fas fa-times"></i> Xóa ảnh
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Mức độ khóa học</label>
+                                <select class="form-select" name="level" required>
+                                    <option value="">Chọn mức độ</option>
+                                    <option value="BEGINNER">Beginner</option>
+                                    <option value="INTERMEDIATE">Intermediate</option>
+                                    <option value="ADVANCED">Advanced</option>
+                                    <option value="EXPERT">Expert</option>
+                                </select>
+                                <div class="invalid-feedback">Vui lòng chọn mức độ khóa học</div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Vai trò công việc</label>
+                                <select class="form-select" name="jobRole" id="createJobRoleSelect">
+                                    <option value="">Chọn vai trò (tùy chọn)</option>
+                                    <!-- Options will be loaded dynamically -->
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Kỹ năng</label>
+                                <select class="form-select" name="skillCategory" id="createSkillCategorySelect">
+                                    <option value="">Chọn kỹ năng (tùy chọn)</option>
+                                    <!-- Options will be loaded dynamically -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Mô tả khóa học</label>
+                            <textarea class="form-control" name="description" rows="3" required></textarea>
+                            <div class="invalid-feedback">Vui lòng nhập mô tả khóa học</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Thời lượng (giờ)</label>
+                                <input type="number" class="form-control" name="duration" min="1" required>
+                                <div class="invalid-feedback">Vui lòng nhập thời lượng khóa học</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Trạng thái</label>
+                                <select class="form-select" name="status" required>
+                                    <option value="DRAFT">Bản nháp</option>
+                                    <option value="PUBLISHED">Đã xuất bản</option>
+                                    <option value="ARCHIVED">Đã lưu trữ</option>
+                                </select>
+                                <div class="form-text">
+                                    <small class="text-muted">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        <strong>Bản nháp:</strong> Cần xét duyệt (chuyển thành "Chờ duyệt") |
+                                        <strong>Đã xuất bản:</strong> Không cần xét duyệt
+                                    </small>
+                                </div>
+                                <div class="invalid-feedback">Vui lòng chọn trạng thái</div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Yêu cầu đầu vào</label>
+                            <textarea class="form-control" name="prerequisites" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Mục tiêu khóa học</label>
+                            <textarea class="form-control" name="objectives" rows="2"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-primary" onclick="createCourse()">
+                        <i class="fas fa-save me-2"></i>Tạo khóa học
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Course Modal -->
+    <div class="modal fade" id="editCourseModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title">
+                        <i class="fas fa-edit me-2"></i>
+                        Chỉnh sửa khóa học
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editCourseForm" class="needs-validation" novalidate>
+                        <input type="hidden" name="courseId">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Tiêu đề khóa học</label>
+                                <input type="text" class="form-control" name="title" required>
+                                <div class="invalid-feedback">Vui lòng nhập tiêu đề khóa học</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Giảng viên</label>
+                                <select class="form-select" name="teacherEmail" required>
+                                    <option value="">Chọn giảng viên</option>
+                                </select>
+                                <div class="invalid-feedback">Vui lòng chọn giảng viên</div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Hình ảnh khóa học</label>
+                                <div class="image-upload-section">
+                                    <div class="mb-2">
+                                        <input type="url" class="form-control" name="image" placeholder="https://example.com/image.jpg">
+                                        <div class="form-text">Nhập URL hình ảnh đại diện cho khóa học</div>
+                                    </div>
+                                    <div class="text-center my-2">
+                                        <span class="text-muted">hoặc</span>
+                                    </div>
+                                    <div class="upload-area" onclick="document.getElementById('editCourseImageUpload').click()">
+                                        <input type="file" id="editCourseImageUpload" accept="image/*" style="display: none;">
+                                        <div class="upload-content">
+                                            <i class="fas fa-cloud-upload-alt mb-2"></i>
+                                            <p class="mb-0">Nhấp để chọn ảnh từ máy tính</p>
+                                            <small class="text-muted">JPG, PNG, GIF (tối đa 5MB)</small>
+                                        </div>
+                                    </div>
+                                    <div class="image-preview" id="editImagePreview" style="display: none;">
+                                        <img id="editPreviewImg" src="" alt="Preview" style="max-width: 100%; height: auto; border-radius: 8px;">
+                                        <button type="button" class="btn btn-sm btn-danger mt-2" onclick="clearEditImagePreview()">
+                                            <i class="fas fa-times"></i> Xóa ảnh
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Mức độ khóa học</label>
+                                <select class="form-select" name="level" required>
+                                    <option value="">Chọn mức độ</option>
+                                    <option value="BEGINNER">Beginner</option>
+                                    <option value="INTERMEDIATE">Intermediate</option>
+                                    <option value="ADVANCED">Advanced</option>
+                                    <option value="EXPERT">Expert</option>
+                                </select>
+                                <div class="invalid-feedback">Vui lòng chọn mức độ khóa học</div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Vai trò công việc</label>
+                                <select class="form-select" name="jobRole" id="editJobRoleSelect">
+                                    <option value="">Chọn vai trò (tùy chọn)</option>
+                                    <!-- Options will be loaded dynamically -->
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Kỹ năng</label>
+                                <select class="form-select" name="skillCategory" id="editSkillCategorySelect">
+                                    <option value="">Chọn kỹ năng (tùy chọn)</option>
+                                    <!-- Options will be loaded dynamically -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Mô tả khóa học</label>
+                            <textarea class="form-control" name="description" rows="3" required></textarea>
+                            <div class="invalid-feedback">Vui lòng nhập mô tả khóa học</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Thời lượng (giờ)</label>
+                                <input type="number" class="form-control" name="duration" min="1" required>
+                                <div class="invalid-feedback">Vui lòng nhập thời lượng khóa học</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Trạng thái</label>
+                                <select class="form-select" name="status" required>
+                                    <option value="DRAFT">Bản nháp</option>
+                                    <option value="PUBLISHED">Đã xuất bản</option>
+                                    <option value="ARCHIVED">Đã lưu trữ</option>
+                                </select>
+                                <div class="form-text">
+                                    <small class="text-muted">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        <strong>Bản nháp:</strong> Cần xét duyệt (chuyển thành "Chờ duyệt") |
+                                        <strong>Đã xuất bản:</strong> Không cần xét duyệt
+                                    </small>
+                                </div>
+                                <div class="invalid-feedback">Vui lòng chọn trạng thái</div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Yêu cầu đầu vào</label>
+                            <textarea class="form-control" name="prerequisites" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Mục tiêu khóa học</label>
+                            <textarea class="form-control" name="objectives" rows="2"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-warning" onclick="updateCourse()">
+                        <i class="fas fa-save me-2"></i>Cập nhật
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Course Details Modal -->
+    <div class="modal fade" id="courseDetailsModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title">
+                        <i class="fas fa-eye me-2"></i>
+                        Chi tiết khóa học
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Content will be dynamically loaded -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/script_admin.js"></script>
+    
+    <script>
+        // Load categories dynamically
+        async function loadCategories() {
+            try {
+                // Load job roles
+                const jobRoleResponse = await fetch('/api/dynamic-categories/job-roles-list');
+                const jobRoles = await jobRoleResponse.json();
+                
+                // Load skill categories
+                const skillResponse = await fetch('/api/dynamic-categories/skill-categories');
+                const skillCategories = await skillResponse.json();
+                
+                // Populate create modal dropdowns
+                const createJobRoleSelect = document.getElementById('createJobRoleSelect');
+                const createSkillCategorySelect = document.getElementById('createSkillCategorySelect');
+                
+                // Populate edit modal dropdowns
+                const editJobRoleSelect = document.getElementById('editJobRoleSelect');
+                const editSkillCategorySelect = document.getElementById('editSkillCategorySelect');
+                
+                // Clear and populate job role options
+                [createJobRoleSelect, editJobRoleSelect].forEach(select => {
+                    if (select) {
+                        // Clear existing options
+                        select.innerHTML = '<option value="">Chọn vai trò (tùy chọn)</option>';
+                        
+                        jobRoles.forEach(jobRole => {
+                            const option = document.createElement('option');
+                            option.value = jobRole.name;
+                            option.textContent = jobRole.displayName;
+                            select.appendChild(option);
+                        });
+                    }
+                });
+                
+                // Clear and populate skill category options
+                [createSkillCategorySelect, editSkillCategorySelect].forEach(select => {
+                    if (select) {
+                        // Clear existing options
+                        select.innerHTML = '<option value="">Chọn kỹ năng (tùy chọn)</option>';
+                        
+                        skillCategories.forEach(skillCategory => {
+                            const option = document.createElement('option');
+                            option.value = skillCategory.name;
+                            option.textContent = skillCategory.displayName;
+                            select.appendChild(option);
+                        });
+                    }
+                });
+                
+                console.log('✅ Categories loaded successfully');
+                
+            } catch (error) {
+                console.error('❌ Error loading categories:', error);
+                // Show user-friendly error message
+                const errorMessage = 'Không thể tải danh sách categories. Vui lòng thử lại sau.';
+                if (document.querySelector('.alert')) {
+                    document.querySelector('.alert').remove();
+                }
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'alert alert-warning alert-dismissible fade show';
+                alertDiv.innerHTML = `
+                    ${errorMessage}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+                document.querySelector('.container-fluid').insertBefore(alertDiv, document.querySelector('.container-fluid').firstChild);
+            }
+        }
+        
+        // Load categories when page loads
+        document.addEventListener('DOMContentLoaded', loadCategories);
+    </script>
+</body>
+</html>

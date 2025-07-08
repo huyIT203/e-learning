@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Catalog - Esoclusty</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #7d3cf7;
+            --primary-hover: #5e17eb;
+            --text-dark: #2d3748;
+            --text-muted: #718096;
+            --border-color: #e2e8f0;
+            --danger-color: #ef4444;
+            --background-light: #f8fafc;
+            --secondary-color: #5e17eb;
+            --accent-color: #ffcc00;
+            --text-light: #ffffff;
+            --bg-light: #f8f9fa;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+            padding-top: 80px; /* Account for fixed header */
+        }
+
+        header {
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-weight: 700;
+            font-size: 24px;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .logo i {
+            margin-right: 10px;
+            font-size: 28px;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+
+        .nav-links li {
+            margin-left: 30px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--primary-color);
+        }
+
+        .auth-buttons {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 30px;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            margin-right: 15px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .breadcrumb {
+            background: white;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .breadcrumb-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .breadcrumb-nav {
+            display: flex;
+            align-items: center;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .breadcrumb-nav a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .breadcrumb-nav span {
+            margin: 0 10px;
+        }
+
+        .main-container {
+            max-width: 1500px;
+            margin: 0 auto;
+            padding: 30px 20px;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 30px;
+        }
+
+        .sidebar {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+
+        .sidebar h3 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar h3 i {
+            margin-right: 8px;
+            color: var(--primary-color);
+        }
+
+        .filter-section {
+            margin-bottom: 30px;
+        }
+
+        .filter-section h4 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+
+        .filter-group {
+            margin-bottom: 20px;
+        }
+
+        .filter-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            cursor: pointer;
+            padding: 8px 0;
+            transition: color 0.3s;
+        }
+
+        .filter-item:hover {
+            color: var(--primary-color);
+        }
+
+        .filter-item input[type="checkbox"] {
+            margin-right: 10px;
+            accent-color: var(--primary-color);
+        }
+
+        .filter-item input[type="radio"] {
+            margin-right: 10px;
+            accent-color: var(--primary-color);
+        }
+
+        .expand-btn {
+            color: var(--primary-color);
+            background: none;
+            border: none;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-weight: 500;
+        }
+
+        .content-area {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .content-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .view-options {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .view-toggle {
+            display: flex;
+            background: var(--bg-light);
+            border-radius: 8px;
+            padding: 4px;
+        }
+
+        .view-toggle button {
+            background: none;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: all 0.3s;
+        }
+
+        .view-toggle button.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .sort-select {
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: white;
+            color: var(--text-dark);
+            font-size: 14px;
+        }
+
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .course-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+        }
+
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .course-image {
+            position: relative;
+            height: 180px;
+            overflow: hidden;
+        }
+
+        .course-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .course-card:hover .course-image img {
+            transform: scale(1.05);
+        }
+
+        .course-level {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: var(--primary-color);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .course-level.beginner {
+            background: var(--success-color);
+        }
+
+        .course-level.intermediate {
+            background: var(--warning-color);
+        }
+
+        .course-level.advanced {
+            background: var(--danger-color);
+        }
+
+        .course-level.expert {
+            background: #8b5cf6;
+        }
+
+        .course-content {
+            padding: 20px;
+        }
+
+        .course-category {
+            color: var(--primary-color);
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .course-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--text-dark);
+            line-height: 1.4;
+        }
+
+        .course-instructor {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .course-stats {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .course-stats span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .course-rating {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--warning-color);
+        }
+
+        .course-rating .no-rating {
+            color: var(--text-muted);
+            font-style: italic;
+            font-size: 13px;
+        }
+
+        .course-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .course-price {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .course-price.free {
+            color: var(--success-color);
+        }
+
+        .enroll-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .enroll-btn:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        .enroll-btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Style for Continue Learning button */
+        .enroll-btn.continue-learning {
+            background: #10b981;
+        }
+
+        .enroll-btn.continue-learning:hover {
+            background: #059669;
+        }
+
+        .no-courses {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+
+        .no-courses i {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: var(--border-color);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .loading i {
+            font-size: 48px;
+            color: var(--primary-color);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .sidebar {
+                position: static;
+            }
+
+            .content-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .courses-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* User Menu Styles */
+        .user-menu {
+            position: relative;
+        }
+
+        .user-avatar-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(125, 60, 247, 0.1);
+        }
+
+        .user-avatar-section:hover {
+            background: rgba(125, 60, 247, 0.15);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid var(--primary-color);
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-name {
+            font-weight: 500;
+            color: var(--text-dark);
+            font-size: 14px;
+        }
+
+        .dropdown-arrow {
+            font-size: 12px;
+            color: var(--text-muted);
+            transition: transform 0.3s ease;
+        }
+
+        .user-avatar-section.active .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        /* Dropdown Menu */
+        .user-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            border: 1px solid var(--border-color);
+            min-width: 280px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            margin-top: 10px;
+        }
+
+        .user-dropdown.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            background: linear-gradient(135deg, rgba(125, 60, 247, 0.05), rgba(94, 23, 235, 0.05));
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar-large {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid var(--primary-color);
+        }
+
+        .user-avatar-large img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-details {
+            flex: 1;
+        }
+
+        .user-name-large {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .user-email {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .dropdown-menu {
+            padding: 10px 0;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            color: var(--text-dark);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(125, 60, 247, 0.05);
+            color: var(--primary-color);
+        }
+
+        .dropdown-item i {
+            width: 16px;
+            font-size: 14px;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 8px 0;
+        }
+
+        .logout-item:hover {
+            background: rgba(239, 68, 68, 0.05);
+            color: var(--danger-color);
+        }
+
+        .filter-actions {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .filter-actions .btn {
+            width: 100%;
+            justify-content: center;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-actions .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+        }
+
+        .filter-actions .btn-outline:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .results-info {
+            background: var(--bg-light);
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .results-count {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .clear-filters {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 500;
+        }
+
+        .clear-filters:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <div class="logo">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>Esoclusty</span>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/courses" class="active">Courses</a></li>
+                    
+                </ul>
+                <div class="auth-buttons">
+                    <div th:if="${currentUser != null}">
+                        <div class="user-menu">
+                            <div class="user-avatar-section">
+                                <div class="user-avatar">
+                                    <img th:src="${currentUser.avatarUrl != null ? currentUser.avatarUrl : 'https://ui-avatars.com/api/?name=' + currentUser.name + '&background=7d3cf7&color=fff&size=40'}" 
+                                         th:alt="${currentUser.name}">
+                                </div>
+                                <span class="user-name" th:text="${currentUser.name}">User</span>
+                                <i class="fas fa-chevron-down dropdown-arrow"></i>
+                            </div>
+                            
+                            <div class="user-dropdown">
+                                <div class="dropdown-header">
+                                    <div class="user-info">
+                                        <div class="user-avatar-large">
+                                            <img th:src="${currentUser.avatarUrl != null ? currentUser.avatarUrl : 'https://ui-avatars.com/api/?name=' + currentUser.name + '&background=7d3cf7&color=fff&size=60'}" 
+                                                 th:alt="${currentUser.name}">
+                                        </div>
+                                        <div class="user-details">
+                                            <div class="user-name-large" th:text="${currentUser.name}">User Name</div>
+                                            <div class="user-email" th:text="${currentUser.email}">user@example.com</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="dropdown-menu">
+                                    <a th:if="${currentUser.role.name() == 'ADMIN'}" th:href="@{/admin/dashboard}" class="dropdown-item">
+                                        <i class="fas fa-tachometer-alt"></i>
+                                        <span>Dashboard</span>
+                                    </a>
+                                    <a th:if="${currentUser.role.name() == 'TEACHER'}" th:href="@{/teacher/dashboard}" class="dropdown-item">
+                                        <i class="fas fa-tachometer-alt"></i>
+                                        <span>Dashboard</span>
+                                    </a>
+                                    <a th:if="${currentUser.role.name() == 'STUDENT'}" th:href="@{/student/dashboard}" class="dropdown-item">
+                                        <i class="fas fa-tachometer-alt"></i>
+                                        <span>Dashboard</span>
+                                    </a>
+                                    <a th:if="${currentUser.role.name() == 'STUDENT'}" th:href="@{/student/profile}" class="dropdown-item">
+                                        <i class="fas fa-user"></i>
+                                        <span>Profile</span>
+                                    </a>
+                                    <a href="#" class="dropdown-item">
+                                        <i class="fas fa-cog"></i>
+                                        <span>Settings</span>
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                    <a href="#" onclick="handleLogout()" class="dropdown-item logout-item">
+                                        <i class="fas fa-sign-out-alt"></i>
+                                        <span>Logout</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div th:if="${currentUser == null}">
+                        <a href="/login" class="btn btn-outline">Log In</a>
+                        <a href="/register" class="btn btn-primary">Sign Up</a>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+        <div class="breadcrumb-content">
+            <nav class="breadcrumb-nav">
+                <a href="/">Home</a>
+                <span>></span>
+                <span>Learning Catalog</span>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Sidebar Filters -->
+        <aside class="sidebar">
+            <h3><i class="fas fa-filter"></i> Filters</h3>
+            
+            <div class="filter-section">
+                <h4>Job Roles</h4>
+                <div class="filter-group">
+                    <label class="filter-item">
+                        <input type="radio" name="job-role" value="" 
+                               th:checked="${selectedJobRole == null}">
+                        <span>All Roles</span>
+                    </label>
+                    <label class="filter-item" th:each="jobRole : ${jobRoles}">
+                        <input type="radio" name="job-role" 
+                               th:value="${jobRole.name}"
+                               th:checked="${selectedJobRole != null and selectedJobRole == jobRole.name}">
+                        <span th:text="${jobRole.displayName}">Role Name</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <h4>Skills</h4>
+                <div class="filter-group">
+                    <label class="filter-item">
+                        <input type="radio" name="skill-category" value="" 
+                               th:checked="${selectedSkillCategory == null}">
+                        <span>All Skills</span>
+                    </label>
+                    <label class="filter-item" th:each="skillCategory : ${skillCategories}">
+                        <input type="radio" name="skill-category" 
+                               th:value="${skillCategory.name}"
+                               th:checked="${selectedSkillCategory != null and selectedSkillCategory == skillCategory.name}">
+                        <span th:text="${skillCategory.displayName}">Skill Name</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <h4>Course Level</h4>
+                <div class="filter-group">
+                    <label class="filter-item">
+                        <input type="checkbox" name="level" value="BEGINNER"
+                               th:checked="${selectedLevels != null and selectedLevels.contains(T(com.elearning.elearning_backend.Enum.CourseLevel).BEGINNER)}">
+                        <span>Beginner</span>
+                    </label>
+                    <label class="filter-item">
+                        <input type="checkbox" name="level" value="INTERMEDIATE"
+                               th:checked="${selectedLevels != null and selectedLevels.contains(T(com.elearning.elearning_backend.Enum.CourseLevel).INTERMEDIATE)}">
+                        <span>Intermediate</span>
+                    </label>
+                    <label class="filter-item">
+                        <input type="checkbox" name="level" value="ADVANCED"
+                               th:checked="${selectedLevels != null and selectedLevels.contains(T(com.elearning.elearning_backend.Enum.CourseLevel).ADVANCED)}">
+                        <span>Advanced</span>
+                    </label>
+                    <label class="filter-item">
+                        <input type="checkbox" name="level" value="EXPERT"
+                               th:checked="${selectedLevels != null and selectedLevels.contains(T(com.elearning.elearning_backend.Enum.CourseLevel).EXPERT)}">
+                        <span>Expert</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="filter-actions">
+                <button type="button" class="btn btn-primary" onclick="applyFilters()">
+                    <i class="fas fa-filter"></i> Apply Filters
+                </button>
+                <button type="button" class="btn btn-outline" onclick="clearAllFilters()">
+                    <i class="fas fa-times"></i> Clear All
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="content-area">
+            <!-- Results Info -->
+            <div class="results-info" th:if="${selectedJobRole != null or selectedSkillCategory != null or (selectedLevels != null and !selectedLevels.isEmpty())}">
+                <div class="results-count">
+                    <span th:text="${courses.size()}">0</span> courses found
+                    <span th:if="${selectedJobRole != null}"> for <strong th:text="${selectedJobRole}">Job Role</strong></span>
+                    <span th:if="${selectedSkillCategory != null}"> in <strong th:text="${selectedSkillCategory}">Skill</strong></span>
+                    <span th:if="${selectedLevels != null and !selectedLevels.isEmpty()}"> 
+                        at <strong th:text="${#strings.listJoin(selectedLevels, ', ')}">Level</strong> level
+                    </span>
+                </div>
+                <a href="/courses" class="clear-filters">
+                    <i class="fas fa-times"></i> Clear filters
+                </a>
+            </div>
+
+            <div class="content-header">
+                <h1 class="content-title">
+                    <span th:if="${selectedJobRole == null and selectedSkillCategory == null and (selectedLevels == null or selectedLevels.isEmpty())}">All Courses</span>
+                    <span th:if="${selectedJobRole != null}" th:text="${selectedJobRole} + ' Courses'">Job Role Courses</span>
+                    <span th:if="${selectedSkillCategory != null and selectedJobRole == null and (selectedLevels == null or selectedLevels.isEmpty())}" th:text="${selectedSkillCategory} + ' Courses'">Skill Courses</span>
+                    <span th:if="${selectedLevels != null and !selectedLevels.isEmpty() and selectedJobRole == null and selectedSkillCategory == null}" 
+                          th:text="${#strings.listJoin(selectedLevels, ', ')} + ' Level Courses'">Level Courses</span>
+                    <span th:if="${(selectedJobRole != null or selectedSkillCategory != null) and selectedLevels != null and !selectedLevels.isEmpty()}">
+                        Filtered Courses
+                    </span>
+                </h1>
+                <div class="view-options">
+                    <div class="view-toggle">
+                        <button class="active" onclick="switchView('grid')">
+                            <i class="fas fa-th-large"></i>
+                        </button>
+                        <button onclick="switchView('list')">
+                            <i class="fas fa-list"></i>
+                        </button>
+                    </div>
+                    <select class="sort-select" onchange="sortCourses(this.value)">
+                        <option value="relevance">Sort by Relevance</option>
+                        <option value="newest">Newest First</option>
+                        <option value="oldest">Oldest First</option>
+                        <option value="rating">Highest Rated</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Courses Grid -->
+            <div class="courses-grid" id="coursesGrid">
+                <!-- Course cards will be populated here -->
+                <div th:each="courseData : ${coursesWithRating}" class="course-card" th:data-course-id="${courseData.course.id}">
+                    <div class="course-image">
+                        <img th:src="${courseData.course.image != null and !courseData.course.image.isEmpty() ? courseData.course.image : 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60'}" 
+                             th:alt="'Hình ảnh khóa học: ' + ${courseData.course.title}">
+                        <div class="course-level" 
+                             th:class="'course-level ' + ${courseData.course.level != null ? courseData.course.level.toString().toLowerCase() : 'beginner'}"
+                             th:text="${courseData.course.level != null ? courseData.course.level.displayName : 'Beginner'}">
+                        </div>
+                    </div>
+                    <div class="course-content">
+                        <div class="course-category" 
+                             th:text="${courseData.course.skillCategory != null ? courseData.course.skillCategory : 'General'}">
+                            Programming
+                        </div>
+                        <h3 class="course-title" th:text="${courseData.course.title}">Course Title</h3>
+                        <p class="course-instructor" th:text="'Instructor: ' + ${courseData.course.instructorName}">Instructor Name</p>
+                        <div class="course-stats">
+                            <span><i class="fas fa-clock"></i> <span th:text="${courseData.course.duration != null ? courseData.course.duration + ' Hours' : '8 Hours'}">8 Hours</span></span>
+                            <span><i class="fas fa-users"></i> <span th:text="${courseData.course.enrolledUserIds != null ? courseData.course.enrolledUserIds.size() + ' Students' : '0 Students'}">0 Students</span></span>
+                        </div>
+                        <div class="course-rating">
+                            <i class="fas fa-star" th:style="${courseData.averageRating > 0 ? 'color: #ffd700;' : 'color: #e9ecef;'}"></i>
+                            <span th:if="${courseData.totalReviews > 0}" 
+                                  th:text="${#numbers.formatDecimal(courseData.averageRating, 1, 1)} + ' (' + ${courseData.totalReviews} + ' reviews)'">
+                                4.8 (120 reviews)
+                            </span>
+                            <span th:if="${courseData.totalReviews == 0}" class="no-rating">
+                                No reviews yet
+                            </span>
+                        </div>
+                        <div class="course-footer">
+                            <div class="course-price">Free</div>
+                            <button class="enroll-btn continue-learning" 
+                                    th:if="${currentUser != null and courseData.course.enrolledUserIds != null and courseData.course.enrolledUserIds.contains(currentUser.id)}">
+                                Continue Learning
+                            </button>
+                            <button class="enroll-btn" 
+                                    th:if="${currentUser == null or courseData.course.enrolledUserIds == null or !courseData.course.enrolledUserIds.contains(currentUser.id)}">
+                                Enroll Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- No Courses Message -->
+            <div class="no-courses" id="noCourses" th:if="${courses.empty}" style="text-align: center; padding: 50px;">
+                <i class="fas fa-search" style="font-size: 48px; color: var(--text-muted); margin-bottom: 20px;"></i>
+                <h3>No courses found</h3>
+                <p>Try adjusting your filters or browse all courses</p>
+                <a href="/courses" class="btn btn-primary" style="margin-top: 20px;">View All Courses</a>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Simple and reliable login detection based on DOM elements
+        function isUserLoggedIn() {
+            // Check if user menu exists (indicates logged in user)
+            const userMenu = document.querySelector('.user-menu');
+            // Check if login/signup buttons exist (indicates not logged in)
+            const loginButton = document.querySelector('a[href="/login"]');
+            
+            const loggedIn = userMenu !== null && loginButton === null;
+            
+            console.log('Login status check:');
+            console.log('- User menu exists:', userMenu !== null);
+            console.log('- Login button exists:', loginButton !== null);
+            console.log('- Final status (logged in):', loggedIn);
+            
+            return loggedIn;
+        }
+        
+        // View switching functionality
+        function switchView(viewType) {
+            const buttons = document.querySelectorAll('.view-toggle button');
+            const grid = document.getElementById('coursesGrid');
+            
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if (viewType === 'list') {
+                grid.style.gridTemplateColumns = '1fr';
+                grid.querySelectorAll('.course-card').forEach(card => {
+                    card.style.display = 'flex';
+                    card.style.flexDirection = 'row';
+                });
+            } else {
+                grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(300px, 1fr))';
+                grid.querySelectorAll('.course-card').forEach(card => {
+                    card.style.display = 'block';
+                    card.style.flexDirection = 'column';
+                });
+            }
+        }
+
+        // Sort functionality
+        function sortCourses(sortBy) {
+            const grid = document.getElementById('coursesGrid');
+            const cards = Array.from(grid.querySelectorAll('.course-card'));
+            
+            cards.sort((a, b) => {
+                switch(sortBy) {
+                    case 'newest':
+                        // Implement date sorting logic
+                        return 0;
+                    case 'oldest':
+                        // Implement date sorting logic
+                        return 0;
+                    case 'rating':
+                        // Implement rating sorting logic
+                        return 0;
+                    default:
+                        return 0;
+                }
+            });
+            
+            // Re-append sorted cards
+            cards.forEach(card => grid.appendChild(card));
+        }
+
+        // Apply filters function
+        function applyFilters() {
+            const selectedJobRole = document.querySelector('input[name="job-role"]:checked')?.value || '';
+            const selectedSkillCategory = document.querySelector('input[name="skill-category"]:checked')?.value || '';
+            const selectedLevels = Array.from(document.querySelectorAll('input[name="level"]:checked')).map(cb => cb.value);
+            
+            // Build URL with parameters
+            const params = new URLSearchParams();
+            if (selectedJobRole) params.set('jobRole', selectedJobRole);
+            if (selectedSkillCategory) params.set('skillCategory', selectedSkillCategory);
+            if (selectedLevels.length > 0) params.set('levels', selectedLevels.join(','));
+            
+            // Redirect to filtered page
+            window.location.href = '/courses?' + params.toString();
+        }
+
+        // Clear all filters
+        function clearAllFilters() {
+            window.location.href = '/courses';
+        }
+
+        // Auto-apply filters when radio buttons or checkboxes change
+        document.addEventListener('DOMContentLoaded', function() {
+            const radioInputs = document.querySelectorAll('input[type="radio"]');
+            const checkboxInputs = document.querySelectorAll('input[name="level"]');
+            
+            radioInputs.forEach(input => {
+                input.addEventListener('change', function() {
+                    // Auto-apply filters when selection changes
+                    setTimeout(applyFilters, 100);
+                });
+            });
+            
+            checkboxInputs.forEach(input => {
+                input.addEventListener('change', function() {
+                    // Auto-apply filters when level selection changes
+                    setTimeout(applyFilters, 100);
+                });
+            });
+        });
+
+        // Enroll functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const enrollButtons = document.querySelectorAll('.enroll-btn');
+            console.log('Found enroll buttons:', enrollButtons.length);
+            
+            enrollButtons.forEach((button, index) => {
+                console.log(`Setting up button ${index + 1}:`, button.textContent.trim());
+                
+                button.addEventListener('click', function(e) {
+                    e.preventDefault(); // Prevent any default behavior
+                    
+                    console.log('Button clicked:', this.textContent.trim());
+                    
+                    // Store current page as referrer for back navigation
+                    localStorage.setItem('courseReferrer', window.location.href);
+                    
+                    if (!isUserLoggedIn()) {
+                        console.log('User not logged in, redirecting to login page');
+                        window.location.href = '/login';
+                        return;
+                    }
+                    
+                    console.log('User is logged in, proceeding with action');
+                    const courseCard = this.closest('.course-card');
+                    const courseId = courseCard.getAttribute('data-course-id');
+                    
+                    console.log('Course ID:', courseId);
+                    console.log('Button classes:', this.className);
+                    
+                    if (this.classList.contains('continue-learning')) {
+                        console.log('Navigating to course lessons (continue learning)');
+                        window.location.href = `/course/${courseId}/lessons`;
+                    } else {
+                        console.log('Enrolling in course');
+                        enrollInCourse(courseId);
+                    }
+                });
+            });
+        });
+
+        // Enroll in course function
+        function enrollInCourse(courseId) {
+            fetch(`/api/student/courses/${courseId}/enroll`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    // After successful enrollment, redirect to lessons instead of reloading
+                    window.location.href = `/course/${courseId}/lessons`;
+                } else {
+                    alert('Failed to enroll in course. Please try again.');
+                }
+            })
+            .catch(error => {
+                console.error('Error enrolling in course:', error);
+                alert('An error occurred. Please try again.');
+            });
+        }
+
+        // User dropdown functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const userMenu = document.querySelector('.user-menu');
+            if (userMenu) {
+                const userSection = userMenu.querySelector('.user-avatar-section');
+                const dropdown = userMenu.querySelector('.user-dropdown');
+                
+                userSection.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    dropdown.classList.toggle('show');
+                });
+                
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function() {
+                    dropdown.classList.remove('show');
+                });
+                
+                // Prevent dropdown from closing when clicking inside it
+                dropdown.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+            }
+        });
+
+        // Logout functionality
+        function handleLogout() {
+            if (confirm('Are you sure you want to logout?')) {
+                // Create a form and submit it to logout
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/logout';
+                
+                // Add CSRF token if available
+                const csrfToken = document.querySelector('meta[name="_csrf"]');
+                const csrfHeader = document.querySelector('meta[name="_csrf_header"]');
+                
+                if (csrfToken && csrfHeader) {
+                    const csrfInput = document.createElement('input');
+                    csrfInput.type = 'hidden';
+                    csrfInput.name = '_token';
+                    csrfInput.value = csrfToken.getAttribute('content');
+                    form.appendChild(csrfInput);
+                }
+                
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+    </script>
+    
+    <!-- User data for chat functionality (only if user is logged in) -->
+    <div th:if="${session.user != null}" th:data-user-id="${session.user.id}" th:data-user-name="${session.user.name}" style="display: none;"></div>
+    
+    <!-- Include floating chat button (only if user is logged in as student) -->
+    <div th:if="${session.user != null and session.user.role.name() == 'STUDENT'}" th:replace="fragment/floating-chat :: floating-chat"></div>
+</body>
+</html> 

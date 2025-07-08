@@ -1,0 +1,133 @@
+### Test Scoring Logic Debug
+
+### 1. Login first
+POST http://localhost:8081/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "password123"
+}
+
+### 2. Create Multiple Choice Quiz
+POST http://localhost:8081/api/embedded-quiz/create-quick
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "lessonId": "64a1b2c3d4e5f6789012345",
+  "title": "Debug Multiple Choice",
+  "description": "Test scoring logic",
+  "type": "MULTIPLE_CHOICE",
+  "position": 1,
+  "isEmbedded": true
+}
+
+### 3. Get Quiz to see question structure
+GET http://localhost:8081/api/embedded-quiz/{{quiz_id}}
+Authorization: Bearer {{auth_token}}
+
+### 4. Start Quiz
+POST http://localhost:8081/api/embedded-quiz/{{quiz_id}}/start?lessonId=64a1b2c3d4e5f6789012345
+Authorization: Bearer {{auth_token}}
+
+### 5. Test WRONG answer (should be incorrect)
+POST http://localhost:8081/api/embedded-quiz/attempts/{{attempt_id}}/save
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "questionId": "{{question_id}}",
+  "answer": "0"
+}
+
+### 6. Submit with WRONG answer
+POST http://localhost:8081/api/embedded-quiz/attempts/{{attempt_id}}/submit
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "{{question_id}}": "0"
+}
+
+### 7. Check result
+GET http://localhost:8081/api/embedded-quiz/{{quiz_id}}/result
+Authorization: Bearer {{auth_token}}
+
+### === Test True/False ===
+
+### 8. Create True/False Quiz
+POST http://localhost:8081/api/embedded-quiz/create-quick
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "lessonId": "64a1b2c3d4e5f6789012345",
+  "title": "Debug True/False",
+  "description": "Test scoring logic",
+  "type": "TRUE_FALSE",
+  "position": 2,
+  "isEmbedded": true
+}
+
+### 9. Get True/False Quiz structure
+GET http://localhost:8081/api/embedded-quiz/{{tf_quiz_id}}
+Authorization: Bearer {{auth_token}}
+
+### 10. Start True/False Quiz
+POST http://localhost:8081/api/embedded-quiz/{{tf_quiz_id}}/start?lessonId=64a1b2c3d4e5f6789012345
+Authorization: Bearer {{auth_token}}
+
+### 11. Test WRONG answer for True/False (should be incorrect)
+POST http://localhost:8081/api/embedded-quiz/attempts/{{tf_attempt_id}}/save
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "questionId": "{{tf_question_id}}",
+  "answer": "1"
+}
+
+### 12. Submit True/False with WRONG answer
+POST http://localhost:8081/api/embedded-quiz/attempts/{{tf_attempt_id}}/submit
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "{{tf_question_id}}": "1"
+}
+
+### 13. Check True/False result
+GET http://localhost:8081/api/embedded-quiz/{{tf_quiz_id}}/result
+Authorization: Bearer {{auth_token}}
+
+### === EXPLANATION ===
+# Multiple Choice: Correct answer is "1" (Đáp án B)
+# - Answer "0" = WRONG (Đáp án A)
+# - Answer "1" = CORRECT (Đáp án B)
+
+# True/False: Correct answer is "0" (Đúng)
+# - Answer "0" = CORRECT (Đúng)
+# - Answer "1" = WRONG (Sai)
+
+### === Manual Test Cases ===
+
+### Test Multiple Choice with CORRECT answer
+POST http://localhost:8081/api/embedded-quiz/attempts/{{attempt_id}}/save
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "questionId": "{{question_id}}",
+  "answer": "1"
+}
+
+### Test True/False with CORRECT answer
+POST http://localhost:8081/api/embedded-quiz/attempts/{{tf_attempt_id}}/save
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "questionId": "{{tf_question_id}}",
+  "answer": "0"
+} 

@@ -1,0 +1,714 @@
+{
+  "info": {
+    "_postman_id": "embedded-quiz-api-collection",
+    "name": "Embedded Quiz API - Fixed Testing",
+    "description": "Complete API collection for testing Embedded Quiz system with debugging capabilities",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{auth_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8081",
+      "type": "string"
+    },
+    {
+      "key": "lesson_id",
+      "value": "64a1b2c3d4e5f6789012345",
+      "type": "string"
+    },
+    {
+      "key": "quiz_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "attempt_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "question_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "🔐 Authentication",
+      "item": [
+        {
+          "name": "Register Test User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"testuser\",\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\",\n  \"fullName\": \"Test User\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "register"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "    console.log('✅ Registration successful or user already exists');",
+                  "} else {",
+                  "    console.log('⚠️ Registration response:', pm.response.text());",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.token) {",
+                  "        pm.collectionVariables.set('auth_token', response.token);",
+                  "        console.log('✅ Login successful, token saved');",
+                  "    }",
+                  "} else {",
+                  "    console.log('❌ Login failed:', pm.response.text());",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🎯 Quiz Testing Flow",
+      "item": [
+        {
+          "name": "1. Create Quick Quiz",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"lessonId\": \"{{lesson_id}}\",\n  \"title\": \"Test Quiz - Multiple Choice\",\n  \"description\": \"Quiz để test scoring logic\",\n  \"type\": \"MULTIPLE_CHOICE\",\n  \"position\": 1,\n  \"isEmbedded\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/embedded-quiz/create-quick",
+              "host": ["{{base_url}}"],
+              "path": ["api", "embedded-quiz", "create-quick"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.id) {",
+                  "        pm.collectionVariables.set('quiz_id', response.id);",
+                  "        console.log('✅ Quiz created with ID:', response.id);",
+                  "        console.log('📝 Title:', response.title);",
+                  "        console.log('🎯 Type:', response.type);",
+                  "    }",
+                  "} else {",
+                  "    console.log('❌ Failed to create quiz:', pm.response.text());",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "2. Get Quiz (Confirm Question ID)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/embedded-quiz/{{quiz_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "embedded-quiz", "{{quiz_id}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.questions && response.questions.length > 0) {",
+                  "        const question = response.questions[0];",
+                  "        pm.collectionVariables.set('question_id', question.id);",
+                  "        console.log('✅ Question ID saved:', question.id);",
+                  "        console.log('📝 Question Text:', question.questionText);",
+                  "        console.log('🎯 Correct Answer Index:', question.correctAnswer);",
+                  "        console.log('📋 Available Options:');",
+                  "        question.options.forEach((option, index) => {",
+                  "            const marker = option.correct ? '✅ (CORRECT)' : '❌';",
+                  "            console.log(`  Index ${index}: ${option.text} ${marker}`);",
+                  "        });",
+                  "        console.log('');",
+                  "        console.log('🧪 TEST PLAN:');",
+                  "        console.log('- Correct answer should be index:', question.correctAnswer);",
+                  "        console.log('- Wrong answers: any index except', question.correctAnswer);",
+                  "    }",
+                  "} else {",
+                  "    console.log('❌ Failed to get quiz:', pm.response.text());",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "3. Start Quiz",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/embedded-quiz/{{quiz_id}}/start?lessonId={{lesson_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "embedded-quiz", "{{quiz_id}}", "start"],
+              "query": [
+                {
+                  "key": "lessonId",
+                  "value": "{{lesson_id}}"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.attemptId) {",
+                  "        pm.collectionVariables.set('attempt_id', response.attemptId);",
+                  "        console.log('✅ Quiz started with attempt ID:', response.attemptId);",
+                  "    }",
+                  "} else {",
+                  "    console.log('❌ Failed to start quiz:', pm.response.text());",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "4. Save Answer (Test WRONG Answer) ❌",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"questionId\": \"{{question_id}}\",\n  \"answer\": \"0\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/embedded-quiz/attempts/{{attempt_id}}/save",
+              "host": ["{{base_url}}"],
+              "path": ["api", "embedded-quiz", "attempts", "{{attempt_id}}", "save"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    console.log('📝 WRONG Answer saved (index \"0\")');",
+                  "    console.log('Response:', response);",
+                  "    console.log('⚠️ This should be WRONG for Multiple Choice quiz!');",
+                  "} else {",
+                  "    console.log('❌ Failed to save answer:', pm.response.text());",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "5. Submit Quiz (With WRONG Answer)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"{{question_id}}\": \"0\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/embedded-quiz/attempts/{{attempt_id}}/submit",
+              "host": ["{{base_url}}"],
+              "path": ["api", "embedded-quiz", "attempts", "{{attempt_id}}", "submit"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    console.log('🎯 QUIZ SUBMITTED WITH WRONG ANSWER');",
+                  "    console.log('==========================================');",
+                  "    console.log('📊 SCORING RESULTS:');",
+                  "    console.log('Score:', response.score);",
+                  "    console.log('Percentage:', response.percentage + '%');",
+                  "    console.log('Correct Answers:', response.correctAnswers);",
+                  "    console.log('Total Questions:', response.totalQuestions);",
+                  "    console.log('Status:', response.status);",
+                  "    console.log('==========================================');",
+                  "    ",
+                  "    // BUG DETECTION",
+                  "    if (response.percentage > 0) {",
+                  "        console.log('🚨🚨 BUG DETECTED! 🚨🚨');",
+                  "        console.log('❌ Wrong answer got points!');",
+                  "        console.log('❌ Expected: 0% score');",
+                  "        console.log('❌ Actual:', response.percentage + '%');",
+                  "        console.log('🔧 NEED TO FIX SCORING LOGIC!');",
+                  "    } else {",
+                  "        console.log('✅ CORRECT BEHAVIOR');",
+                  "        console.log('✅ Wrong answer correctly got 0 points');",
+                  "    }",
+                  "    ",
+                  "    if (response.correctAnswers > 0) {",
+                  "        console.log('🚨 BUG: correctAnswers should be 0 but got:', response.correctAnswers);",
+                  "    }",
+                  "} else {",
+                  "    console.log('❌ Failed to submit quiz:', pm.response.text());",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "6. Get Quiz Result",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/embedded-quiz/{{quiz_id}}/result",
+              "host": ["{{base_url}}"],
+              "path": ["api", "embedded-quiz", "{{quiz_id}}", "result"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    console.log('📊 FINAL QUIZ RESULT:');",
+                  "    console.log('Score:', response.score);",
+                  "    console.log('Percentage:', response.percentage + '%');",
+                  "    console.log('Status:', response.status);",
+                  "    console.log('Attempts:', response.attempts);",
+                  "} else {",
+                  "    console.log('❌ Failed to get result:', pm.response.text());",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🧪 Test Correct Answer",
+      "item": [
+        {
+          "name": "Create New Quiz for Correct Test",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"lessonId\": \"{{lesson_id}}\",\n  \"title\": \"Test Quiz - Correct Answer\",\n  \"description\": \"Test với đáp án đúng\",\n  \"type\": \"MULTIPLE_CHOICE\",\n  \"position\": 2,\n  \"isEmbedded\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/embedded-quiz/create-quick",
+              "host": ["{{base_url}}"],
+              "path": ["api", "embedded-quiz", "create-quick"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.id) {",
+                  "        pm.collectionVariables.set('quiz_id', response.id);",
+                  "        console.log('✅ New quiz created for correct answer test:', response.id);",
+                  "    }",
+                  "} else {",
+                  "    console.log('❌ Failed to create quiz:', pm.response.text());",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Quiz Structure",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/embedded-quiz/{{quiz_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "embedded-quiz", "{{quiz_id}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.questions && response.questions.length > 0) {",
+                  "        const question = response.questions[0];",
+                  "        pm.collectionVariables.set('question_id', question.id);",
+                  "        console.log('✅ Question ID saved:', question.id);",
+                  "        console.log('🎯 Will test CORRECT answer:', question.correctAnswer);",
+                  "    }",
+                  "} else {",
+                  "    console.log('❌ Failed to get quiz:', pm.response.text());",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Start Quiz",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/embedded-quiz/{{quiz_id}}/start?lessonId={{lesson_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "embedded-quiz", "{{quiz_id}}", "start"],
+              "query": [
+                {
+                  "key": "lessonId",
+                  "value": "{{lesson_id}}"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.attemptId) {",
+                  "        pm.collectionVariables.set('attempt_id', response.attemptId);",
+                  "        console.log('✅ Quiz started:', response.attemptId);",
+                  "    }",
+                  "} else {",
+                  "    console.log('❌ Failed to start quiz:', pm.response.text());",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Save CORRECT Answer ✅",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"questionId\": \"{{question_id}}\",\n  \"answer\": \"1\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/embedded-quiz/attempts/{{attempt_id}}/save",
+              "host": ["{{base_url}}"],
+              "path": ["api", "embedded-quiz", "attempts", "{{attempt_id}}", "save"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    console.log('📝 CORRECT Answer saved (index \"1\")');",
+                  "    console.log('Response:', response);",
+                  "} else {",
+                  "    console.log('❌ Failed to save answer:', pm.response.text());",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Submit Quiz (With CORRECT Answer)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"{{question_id}}\": \"1\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/embedded-quiz/attempts/{{attempt_id}}/submit",
+              "host": ["{{base_url}}"],
+              "path": ["api", "embedded-quiz", "attempts", "{{attempt_id}}", "submit"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    console.log('🎯 QUIZ SUBMITTED WITH CORRECT ANSWER');",
+                  "    console.log('==========================================');",
+                  "    console.log('📊 SCORING RESULTS:');",
+                  "    console.log('Score:', response.score);",
+                  "    console.log('Percentage:', response.percentage + '%');",
+                  "    console.log('Correct Answers:', response.correctAnswers);",
+                  "    console.log('Total Questions:', response.totalQuestions);",
+                  "    console.log('Status:', response.status);",
+                  "    console.log('==========================================');",
+                  "    ",
+                  "    // CORRECT ANSWER VALIDATION",
+                  "    if (response.percentage === 100) {",
+                  "        console.log('✅ CORRECT BEHAVIOR');",
+                  "        console.log('✅ Correct answer got 100% score');",
+                  "    } else {",
+                  "        console.log('🚨 POTENTIAL BUG!');",
+                  "        console.log('❌ Correct answer should get 100% but got:', response.percentage + '%');",
+                  "    }",
+                  "} else {",
+                  "    console.log('❌ Failed to submit quiz:', pm.response.text());",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🔧 Debug & Troubleshooting",
+      "item": [
+        {
+          "name": "Check Server Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/auth/check",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "check"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    console.log('✅ Server is running on port 8081');",
+                  "} else {",
+                  "    console.log('❌ Server connection issue:', pm.response.text());",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get All Variables",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/auth/check",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "check"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "console.log('🔍 CURRENT VARIABLES:');",
+                  "console.log('base_url:', pm.collectionVariables.get('base_url'));",
+                  "console.log('lesson_id:', pm.collectionVariables.get('lesson_id'));",
+                  "console.log('auth_token:', pm.collectionVariables.get('auth_token') ? 'SET' : 'NOT SET');",
+                  "console.log('quiz_id:', pm.collectionVariables.get('quiz_id'));",
+                  "console.log('question_id:', pm.collectionVariables.get('question_id'));",
+                  "console.log('attempt_id:', pm.collectionVariables.get('attempt_id'));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ]
+} 

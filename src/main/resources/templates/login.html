@@ -1,0 +1,290 @@
+            <!DOCTYPE html>
+            <html lang="en" xmlns:th="http://www.thymeleaf.org">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Login | Esoclusty</title>
+                <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+                <style>
+                    :root {
+                        --primary-color: #7d3cf7;
+                        --secondary-color: #f5f5f5;
+                        --text-color: #333;
+                        --light-grey: #e2e2e2;
+                        --primary-font: 'Poppins', sans-serif;
+                    }
+
+                    * {
+                        margin: 0;
+                        padding: 0;
+                        box-sizing: border-box;
+                    }
+
+                    body {
+                        font-family: var(--primary-font);
+                        background-color: #f8f9fc;
+                        color: var(--text-color);
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        min-height: 100vh;
+                    }
+
+                    .login-container {
+                        display: flex;
+                        background-color: #fff;
+                        border-radius: 15px;
+                        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+                        overflow: hidden;
+                        width: 900px;
+                        max-width: 90%;
+                    }
+
+                    .login-image {
+                        flex: 1;
+                        background-image: url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NXx8ZWR1Y2F0aW9ufGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60');
+                        background-size: cover;
+                        background-position: center;
+                        min-height: 500px;
+                    }
+
+                    .login-form {
+                        flex: 1;
+                        padding: 50px;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                    }
+
+                    .logo {
+                        display: flex;
+                        align-items: center;
+                        margin-bottom: 30px;
+                    }
+
+                    .logo i {
+                        font-size: 30px;
+                        color: var(--primary-color);
+                    }
+
+                    .logo-text {
+                        font-size: 1.8rem;
+                        font-weight: 700;
+                        color: var(--primary-color);
+                        margin-left: 10px;
+                    }
+
+                    h1 {
+                        font-size: 2rem;
+                        margin-bottom: 10px;
+                        color: #333;
+                    }
+
+                    p {
+                        color: #666;
+                        margin-bottom: 30px;
+                    }
+
+                    .form-group {
+                        margin-bottom: 20px;
+                    }
+
+                    label {
+                        display: block;
+                        margin-bottom: 5px;
+                        font-weight: 500;
+                        color: #555;
+                    }
+
+                    input {
+                        width: 100%;
+                        padding: 12px 15px;
+                        border: 1px solid #ddd;
+                        border-radius: 8px;
+                        font-size: 1rem;
+                        transition: border-color 0.3s;
+                    }
+
+                    input:focus {
+                        border-color: var(--primary-color);
+                        outline: none;
+                    }
+
+                    .btn-login {
+                        background-color: var(--primary-color);
+                        color: white;
+                        border: none;
+                        padding: 12px;
+                        border-radius: 8px;
+                        font-size: 1rem;
+                        cursor: pointer;
+                        transition: background-color 0.3s;
+                        width: 100%;
+                        margin-top: 10px;
+                    }
+
+                    .btn-login:hover {
+                        background-color: #6a2be2;
+                    }
+
+                    .forgot-password {
+                        text-align: right;
+                        margin-top: 10px;
+                    }
+
+                    .forgot-password a {
+                        color: #666;
+                        text-decoration: none;
+                    }
+
+                    .forgot-password a:hover {
+                        color: var(--primary-color);
+                    }
+
+                    .signup-link {
+                        margin-top: 30px;
+                        text-align: center;
+                        color: #666;
+                    }
+
+                    .signup-link a {
+                        color: var(--primary-color);
+                        text-decoration: none;
+                        font-weight: 500;
+                    }
+
+                    .error-message {
+                        color: #dc3545;
+                        margin-bottom: 15px;
+                        padding: 10px;
+                        background-color: #f8d7da;
+                        border-radius: 5px;
+                        display: none;
+                    }
+
+                    .error-message.show {
+                        display: block;
+                    }
+
+                    @media (max-width: 768px) {
+                        .login-container {
+                            flex-direction: column;
+                        }
+
+                        .login-image {
+                            display: none;
+                        }
+
+                        .login-form {
+                            padding: 30px;
+                        }
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="login-container">
+                    <div class="login-image"></div>
+                    <div class="login-form">
+                        <div class="logo">
+                            <i class="fas fa-graduation-cap"></i>
+                            <span class="logo-text">Esoclusty</span>
+                        </div>
+
+                        <h1>Welcome Back!</h1>
+                        <p>Please login to access your account</p>
+
+                        <div th:if="${param.error}" class="error-message show">
+                            Invalid email or password. Please try again.
+                        </div>
+
+                        <form th:action="@{/api/auth/login}" method="post" id="loginForm">
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" id="email" name="email" required placeholder="Enter your email">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="password">Password</label>
+                                <input type="password" id="password" name="password" required placeholder="Enter your password">
+                            </div>
+
+
+                            <div class="forgot-password">
+                                <a href="/forgot-password">Forgot Password?</a>
+                            </div>
+
+                            <button type="submit" class="btn-login">Login</button>
+
+                            <div class="signup-link">
+                                Don't have an account? <a href="/register">Sign up</a>
+                            </div>
+    <!--                        <label>-->
+    <!--                            <input type="checkbox" id="rememberMe"> Remember Me-->
+    <!--                        </label>-->
+                        </form>
+
+                    </div>
+                </div>
+
+                <script>
+                    document.getElementById('loginForm').addEventListener('submit', function(e) {
+                        e.preventDefault();
+
+                        const email = document.getElementById('email').value;
+                        const password = document.getElementById('password').value;
+                        
+                        fetch('/api/auth/login', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ email, password })
+                        })
+                        .then(res => {
+                            if (!res.ok) throw new Error("Login failed");
+                            return res.json();
+                        })
+                        .then(data => {
+                            localStorage.setItem("token", data.token);
+                            const role = data.role;
+                            
+                            // Check if there's a redirect URL stored
+                            const redirectUrl = localStorage.getItem('redirectAfterLogin');
+                            
+                            if (redirectUrl) {
+                                // Clear the stored redirect URL
+                                localStorage.removeItem('redirectAfterLogin');
+                                // Redirect to the original page
+                                window.location.href = redirectUrl;
+                            } else {
+                                // Default redirect based on role
+                                if (role === "ADMIN") {
+                                    window.location.href = "/admin/dashboard";
+                                } else if (role === "TEACHER") {
+                                    window.location.href = "/teacher/dashboard";
+                                } else if (role === "STUDENT") {
+                                    // For students, redirect to home page instead of dashboard
+                                    window.location.href = "/";
+                                } else {
+                                    alert("Unknown role. Access denied.");
+                                }
+                            }
+                        })
+                        .catch(err => {
+                            alert("Sai tài khoản hoặc mật khẩu");
+                        });
+                    });
+                    
+                    // Check if there's a redirect parameter in URL
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const redirectUrl = urlParams.get('redirect');
+                        
+                        if (redirectUrl) {
+                            // Store the redirect URL for after login
+                            localStorage.setItem('redirectAfterLogin', decodeURIComponent(redirectUrl));
+                        }
+                    });
+                </script>
+
+            </body>
+            </html>

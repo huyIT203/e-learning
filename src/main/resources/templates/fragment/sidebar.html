@@ -1,0 +1,128 @@
+<div th:fragment="sidebar(role, user)" xmlns:th="http://www.w3.org/1999/xhtml">
+    <section id="sidebar">
+        <a href="#" class="brand">
+            <i class='bx bxs-smile'></i>
+            <span class="text">E-learning</span>
+        </a>
+        <p th:text="'XIN CHÀO : ' + ${user != null ? user.name + ' (' + role + ')' : 'Role hiện tại: ' + role}"></p>
+        <ul class="side-menu top">
+            <li data-path="/dashboard">
+                <a th:if="${role.name() == 'ADMIN'}" th:href="@{/admin/dashboard}">
+                    <i class='bx bxs-dashboard'></i>
+                    <span class="text">Dashboard</span>
+                </a>
+                <a th:if="${role.name() == 'TEACHER'}" th:href="@{/teacher/dashboard}">
+                    <i class='bx bxs-dashboard'></i>
+                    <span class="text">Dashboard</span>
+                </a>
+                <a th:if="${role.name() == 'STUDENT'}" th:href="@{/student/dashboard}">
+                    <i class='bx bxs-dashboard'></i>
+                    <span class="text">Dashboard</span>
+                </a>
+            </li>
+
+            <li th:if="${role.name() == 'ADMIN'}" data-path="/courses">
+                <a th:href="@{/admin/courses}">
+                    <i class='bx bxs-book'></i>
+                    <span class="text">Khóa học</span>
+                </a>
+            </li>
+            
+            <li th:if="${role.name() == 'ADMIN'}" data-path="/users">
+                <a th:href="@{/admin/users}">
+                    <i class='bx bxs-group'></i>
+                    <span class="text">Người dùng</span>
+                </a>
+            </li>
+            
+            <li th:if="${role.name() == 'TEACHER'}" data-path="/courses">
+                <a th:href="@{/teacher/courses}">
+                    <i class='bx bxs-book'></i>
+                    <span class="text">Khóa học của tôi</span>
+                </a>
+            </li>
+            
+            <li data-path="/statistics">
+                <a th:if="${role.name() == 'ADMIN'}" th:href="@{/admin/statistics}">
+                    <i class='bx bxs-doughnut-chart'></i>
+                    <span class="text">Thống kê</span>
+                </a>
+                <a th:if="${role.name() == 'TEACHER'}" th:href="@{/teacher/statistics}">
+                    <i class='bx bxs-doughnut-chart'></i>
+                    <span class="text">Thống kê</span>
+                </a>
+                
+            </li>
+            <li data-path="/messages">
+                <a th:if="${role.name() == 'ADMIN'}" th:href="@{/admin/messages}">
+                    <i class='bx bxs-message-dots'></i>
+                    <span class="text">Tin nhắn</span>
+                </a>
+                <a th:if="${role.name() == 'TEACHER'}" th:href="@{/teacher/messages}">
+                    <i class='bx bxs-message-dots'></i>
+                    <span class="text">Tin nhắn</span>
+                </a>
+            </li>
+            <li th:if="${role.name() == 'ADMIN'}" data-path="/profile">
+                <a  th:href="@{/admin/profile}">
+                    <i class='bx bxs-user'></i>
+                    <span class="text">Hồ sơ cá nhân</span>
+                </a>
+            </li>
+
+            <li th:if="${role.name() == 'TEACHER'}" data-path="/profile">
+                <a  th:href="@{/teacher/profile}">
+                    <i class='bx bxs-user'></i>
+                    <span class="text">Hồ sơ cá nhân</span>
+                </a>
+            </li>
+
+            <li th:if="${role.name() == 'ADMIN'}" data-path="/categories">
+                <a th:href="@{/admin/categories}">
+                    <i class='bx bxs-category'></i>
+                    <span class="text">Danh mục</span>
+                </a>
+            </li>
+          
+
+            
+        </ul>
+        <ul class="side-menu">
+            <li>
+                <a href="#" class="logout" onclick="handleLogout()">
+                    <i class='bx bxs-log-out-circle'></i>
+                    <span class="text">Đăng xuất</span>
+                </a>
+            </li>
+        </ul>
+    </section>
+    
+    <script>
+        // Set active menu item based on current URL
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPath = window.location.pathname;
+            const menuItems = document.querySelectorAll('#sidebar .side-menu.top li[data-path]');
+            
+            // Remove active class from all items
+            menuItems.forEach(item => item.classList.remove('active'));
+            
+            // Add active class to matching item
+            menuItems.forEach(item => {
+                const itemPath = item.getAttribute('data-path');
+                if (currentPath.includes(itemPath)) {
+                    item.classList.add('active');
+                }
+            });
+            
+            // Special case for dashboard (default)
+            if (currentPath.endsWith('/dashboard')) {
+                const dashboardItem = document.querySelector('#sidebar .side-menu.top li[data-path="/dashboard"]');
+                if (dashboardItem) {
+                    dashboardItem.classList.add('active');
+                }
+            }
+        });
+    </script>
+</div>
+
+

@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Boxicons -->
+    <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- Dark Mode Script -->
+    <script src="/js/darkmode.js"></script>
+
+    <title>Admin Dashboard</title>
+
+    <style>
+        .notification-section {
+            margin-bottom: 30px;
+        }
+        
+        .notification-form {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .file-upload-area {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            background: #fafafa;
+            transition: border-color 0.3s ease;
+        }
+        
+        .file-upload-area:hover {
+            border-color: #3C91E6;
+        }
+        
+        .file-upload-area input[type="file"] {
+            display: none;
+        }
+        
+        .file-upload-text {
+            cursor: pointer;
+        }
+        
+        .file-upload-text i {
+            font-size: 48px;
+            color: #3C91E6;
+            margin-bottom: 10px;
+        }
+        
+        .file-upload-text p {
+            margin: 10px 0 5px 0;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .file-upload-text small {
+            color: #666;
+            font-size: 12px;
+        }
+        
+        .selected-files {
+            margin-top: 15px;
+            text-align: left;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .btn-primary {
+            background: #3C91E6;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+        
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+        
+        /* Home button styling */
+        .home-btn:hover {
+            color: #2980b9 !important;
+            transform: translateY(-1px);
+            transition: all 0.2s ease;
+        }
+        
+        @media (max-width: 768px) {
+            .home-btn span {
+                display: none;
+            }
+            .home-btn {
+                margin-right: 10px !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div th:replace="~{fragment/sidebar :: sidebar(role=${user.role}, user=${user})}"></div>
+
+<!-- CONTENT -->
+<section id="content">
+    <!-- NAVBAR -->
+    <nav th:replace="~{fragment/navbar :: navbar}">
+    </nav>
+    <!-- NAVBAR -->
+
+    <!-- MAIN -->
+    <main>
+        <div class="head-title">
+            <div class="left">
+                <h1>Admin Dashboard</h1>
+                <ul class="breadcrumb">
+                    <li>
+                        <a href="#">Dashboard</a>
+                    </li>
+                    <li><i class='bx bx-chevron-right' ></i></li>
+                    <li>
+                        <a class="active" href="#">Home</a>
+                    </li>
+                </ul>
+            </div>
+            <a href="#" class="btn-download">
+                <i class='bx bxs-cloud-download' ></i>
+                <span class="text">Export Report</span>
+            </a>
+        </div>
+
+        <ul class="box-info">
+            <li>
+                <i class='bx bxs-group' ></i>
+                <span class="text">
+                    <h3 id="totalUsers">0</h3>
+                    <p>Tổng người dùng</p>
+                </span>
+            </li>
+            <li>
+                <i class='bx bxs-book' ></i>
+                <span class="text">
+                    <h3 id="totalCourses">0</h3>
+                    <p>Tổng khóa học</p>
+					</span>
+            </li>
+            <li>
+                <i class='bx bxs-graduation' ></i>
+                <span class="text">
+                    <h3 id="totalStudents">0</h3>
+                    <p>Học viên</p>
+					</span>
+            </li>
+            <li>
+                <i class='bx bxs-user-badge' ></i>
+                <span class="text">
+                    <h3 id="totalTeachers">0</h3>
+                    <p>Giảng viên</p>
+					</span>
+            </li>
+        </ul>
+
+        <div class="table-data">
+            <div class="order">
+                <div class="head">
+                    <h3>Danh sách người dùng</h3>
+                    <i class='bx bx-search' ></i>
+                    <i class='bx bx-filter' ></i>
+                </div>
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Người dùng</th>
+                        <th>Email</th>
+                        <th>Vai trò</th>
+                        <th>Trạng thái</th>
+                    </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <!-- Users will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="todo">
+                <div class="head">
+                    <h3>Tạo thông báo</h3>
+                    <i class='bx bx-plus' onclick="showNotificationForm()"></i>
+                    <i class='bx bx-filter' ></i>
+                </div>
+                
+                <div class="notification-section">
+                    <h3>Tạo thông báo mới</h3>
+                    <button class="btn btn-primary" onclick="showNotificationForm()">Tạo thông báo</button>
+                    
+                    <!-- Notification Form -->
+                    <div id="notificationForm" class="notification-form" style="display: none;">
+                        <form id="createNotificationForm" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <label for="notificationTitle">Tiêu đề:</label>
+                                <input type="text" id="notificationTitle" name="title" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="notificationMessage">Nội dung:</label>
+                                <textarea id="notificationMessage" name="message" rows="4" required></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="notificationPriority">Mức độ ưu tiên:</label>
+                                <select id="notificationPriority" name="priority" required>
+                                    <option value="LOW">Thấp</option>
+                                    <option value="MEDIUM">Trung bình</option>
+                                    <option value="HIGH">Cao</option>
+                                    <option value="URGENT">Khẩn cấp</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="notificationType">Loại thông báo:</label>
+                                <select id="notificationType" name="type" required>
+                                    <option value="GENERAL">Chung</option>
+                                    <option value="COURSE">Khóa học</option>
+                                    <option value="ASSIGNMENT">Bài tập</option>
+                                    <option value="ANNOUNCEMENT">Thông báo</option>
+                                    <option value="REMINDER">Nhắc nhở</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="notificationAttachments">Tệp đính kèm:</label>
+                                <div class="file-upload-area" onclick="document.getElementById('notificationAttachments').click()">
+                                    <input type="file" id="notificationAttachments" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.jpg,.png,.gif">
+                                    <div class="file-upload-text">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                        <p>Kéo thả tệp vào đây hoặc nhấn để chọn</p>
+                                        <small>Hỗ trợ: PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX, TXT, JPG, PNG, GIF (Tối đa 10MB mỗi tệp)</small>
+                                    </div>
+                                    <div id="selectedFiles" class="selected-files"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">Tạo thông báo</button>
+                                <button type="button" class="btn btn-secondary" onclick="hideNotificationForm()">Hủy</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Recent Notifications -->
+                <ul class="todo-list" id="notificationsList">
+                    <li class="not-completed">
+                        <p>Đang tải thông báo...</p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </main>
+    <!-- MAIN -->
+</section>
+<!-- CONTENT -->
+
+<!-- Notification Detail Modal -->
+<div id="notificationDetailModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
+    <div style="background-color: #fefefe; margin: 5% auto; padding: 20px; border: none; border-radius: 8px; width: 80%; max-width: 600px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="margin: 0; color: #333;">Chi tiết thông báo</h2>
+            <span onclick="closeNotificationModal()" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+        </div>
+        
+        <div id="notificationDetailContent">
+            <!-- Content will be loaded here -->
+        </div>
+        
+        <div id="notificationActions" style="margin-top: 20px; text-align: right;">
+            <button onclick="editNotification()" style="background: #f39c12; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; margin-right: 10px;">
+                Chỉnh sửa
+            </button>
+            <button onclick="closeNotificationModal()" style="background: #95a5a6; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
+                Đóng
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Notification Modal -->
+<div id="editNotificationModal" style="display: none; position: fixed; z-index: 1001; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
+    <div style="background-color: #fefefe; margin: 5% auto; padding: 20px; border: none; border-radius: 8px; width: 80%; max-width: 600px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="margin: 0; color: #333;">Chỉnh sửa thông báo</h2>
+            <span onclick="closeEditModal()" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+        </div>
+        
+        <form id="editNotificationForm">
+            <input type="hidden" id="editNotificationId">
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">Tiêu đề:</label>
+                <input type="text" id="editNotificationTitle" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" required>
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">Nội dung:</label>
+                <textarea id="editNotificationMessage" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; height: 100px;" required></textarea>
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">Mức độ ưu tiên:</label>
+                <select id="editNotificationPriority" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    <option value="LOW">Thấp</option>
+                    <option value="MEDIUM">Bình thường</option>
+                    <option value="HIGH">Quan trọng</option>
+                </select>
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">Loại thông báo:</label>
+                <select id="editNotificationType" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    <option value="ANNOUNCEMENT">Thông báo</option>
+                    <option value="REMINDER">Nhắc nhở</option>
+                    <option value="WARNING">Cảnh báo</option>
+                </select>
+            </div>
+            <div style="text-align: right;">
+                <button type="submit" style="background: #27ae60; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; margin-right: 10px;">
+                    Lưu thay đổi
+                </button>
+                <button type="button" onclick="closeEditModal()" style="background: #95a5a6; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
+                    Hủy
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// Load dashboard data when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    loadSystemStats();
+    loadRecentUsers();
+    loadRecentNotifications();
+    loadTeachers();
+});
+
+function loadSystemStats() {
+    fetch('/admin/api/stats')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const stats = data.stats;
+                document.getElementById('totalUsers').textContent = stats.totalUsers || 0;
+                document.getElementById('totalCourses').textContent = stats.totalCourses || 0;
+                document.getElementById('totalStudents').textContent = stats.totalStudents || 0;
+                document.getElementById('totalTeachers').textContent = stats.totalTeachers || 0;
+            }
+        })
+        .catch(error => {
+            console.error('Error loading stats:', error);
+        });
+}
+
+function loadRecentUsers() {
+    fetch('/admin/api/users/recent')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const tbody = document.getElementById('usersTableBody');
+                tbody.innerHTML = '';
+                
+                data.users.slice(0, 10).forEach(user => {
+                    const row = document.createElement('tr');
+                    const roleColors = {
+                        'ADMIN': 'completed',
+                        'TEACHER': 'process', 
+                        'STUDENT': 'pending'
+                    };
+                    
+                    row.innerHTML = `
+                        <td>
+                            <img src="${user.avatarUrl || 'https://via.placeholder.com/32'}" style="width: 32px; height: 32px; border-radius: 50%;">
+                            <p>${user.name}</p>
+                        </td>
+                        <td>${user.email}</td>
+                        <td><span class="status ${roleColors[user.role] || 'pending'}">${user.role}</span></td>
+                        <td><span class="status completed">Hoạt động</span></td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error loading users:', error);
+        });
+}
+
+function showNotificationForm() {
+    document.getElementById('notificationForm').style.display = 'block';
+}
+
+function hideNotificationForm() {
+    document.getElementById('notificationForm').style.display = 'none';
+    document.getElementById('createNotificationForm').reset();
+    clearSelectedFiles();
+}
+
+// Handle file selection
+let selectedFiles = [];
+
+// Add event listener for file input if it exists
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.getElementById('notificationAttachments');
+    if (fileInput) {
+        fileInput.addEventListener('change', function(e) {
+            handleFileSelection(e.target.files);
+        });
+    }
+});
+
+function handleFileSelection(files) {
+    for (let file of files) {
+        if (file.size > 10 * 1024 * 1024) { // 10MB limit
+            alert(`Tệp "${file.name}" vượt quá giới hạn 10MB`);
+            continue;
+        }
+        
+        const allowedTypes = [
+            'application/pdf',
+            'application/msword',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'application/vnd.ms-excel',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'application/vnd.ms-powerpoint',
+            'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+            'text/plain',
+            'image/jpeg',
+            'image/png',
+            'image/gif'
+        ];
+        
+        if (!allowedTypes.includes(file.type)) {
+            alert(`Loại tệp "${file.name}" không được hỗ trợ`);
+            continue;
+        }
+        
+        selectedFiles.push(file);
+    }
+    
+    displaySelectedFiles();
+}
+
+function displaySelectedFiles() {
+    const container = document.getElementById('selectedFiles');
+    if (!container) return;
+    
+    container.innerHTML = '';
+    
+    selectedFiles.forEach((file, index) => {
+        const fileItem = document.createElement('div');
+        fileItem.className = 'file-item';
+        fileItem.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 5px 10px; background: #f8f9fa; border-radius: 4px; margin-bottom: 5px;';
+        fileItem.innerHTML = `
+            <span class="file-name" style="flex: 1;">${file.name}</span>
+            <span class="file-size" style="color: #666; margin-right: 10px;">(${formatFileSize(file.size)})</span>
+            <button type="button" class="remove-file" onclick="removeFile(${index})" style="background: #dc3545; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer;">×</button>
+        `;
+        container.appendChild(fileItem);
+    });
+}
+
+function removeFile(index) {
+    selectedFiles.splice(index, 1);
+    displaySelectedFiles();
+}
+
+function clearSelectedFiles() {
+    selectedFiles = [];
+    displaySelectedFiles();
+}
+
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+// Upload files and get URLs
+async function uploadFiles(files) {
+    const uploadPromises = files.map(async (file) => {
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        try {
+            const response = await fetch('/api/upload/notification-attachment', {
+                method: 'POST',
+                body: formData
+            });
+            
+            if (response.ok) {
+                const result = await response.json();
+                return {
+                    url: result.fileUrl,
+                    originalName: result.originalName,
+                    type: result.fileType,
+                    size: result.fileSize
+                };
+            } else {
+                throw new Error(`Failed to upload ${file.name}`);
+            }
+        } catch (error) {
+            console.error('Upload error:', error);
+            throw error;
+        }
+    });
+    
+    return await Promise.all(uploadPromises);
+}
+
+// Handle notification form submission
+document.getElementById('createNotificationForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const title = document.getElementById('notificationTitle').value;
+    const message = document.getElementById('notificationMessage').value;
+    const priority = document.getElementById('notificationPriority').value;
+    const type = document.getElementById('notificationType').value;
+    
+    try {
+        // Show loading state
+        const submitButton = e.target.querySelector('button[type="submit"]');
+        const originalText = submitButton.textContent;
+        submitButton.textContent = 'Đang xử lý...';
+        submitButton.disabled = true;
+        
+        // Create notification with attachments
+        const formData = new FormData();
+        formData.append('title', title);
+        formData.append('message', message);
+        formData.append('priority', priority);
+        formData.append('type', type);
+        
+        // Upload files if any and add attachment data
+        if (selectedFiles && selectedFiles.length > 0) {
+            const uploadResults = await uploadFiles(selectedFiles);
+            uploadResults.forEach(result => {
+                formData.append('attachmentUrls', result.url);
+                formData.append('attachmentNames', result.originalName);
+                formData.append('attachmentTypes', result.type);
+                formData.append('attachmentSizes', result.size);
+            });
+        }
+        
+        const response = await fetch('/admin/api/notifications/create', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            alert('Thông báo đã được tạo và gửi thành công!');
+            hideNotificationForm();
+            loadRecentNotifications();
+        } else {
+            alert('Lỗi: ' + result.message);
+        }
+        
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Có lỗi xảy ra khi tạo thông báo: ' + error.message);
+    } finally {
+        // Reset button state
+        const submitButton = e.target.querySelector('button[type="submit"]');
+        submitButton.textContent = originalText;
+        submitButton.disabled = false;
+    }
+});
+
+function loadRecentNotifications() {
+    fetch('/admin/api/notifications/recent')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const notificationsList = document.getElementById('notificationsList');
+                notificationsList.innerHTML = '';
+                
+                if (data.notifications.length === 0) {
+                    notificationsList.innerHTML = '<li class="not-completed"><p>Chưa có thông báo nào</p></li>';
+                    return;
+                }
+                
+                data.notifications.forEach(notification => {
+                    const li = document.createElement('li');
+                    li.className = notification.read ? 'completed' : 'not-completed';
+                    
+                    const priorityIcons = {
+                        'HIGH': '🔴',
+                        'MEDIUM': '🟡',
+                        'LOW': '🟢'
+                    };
+                    
+                    const typeIcons = {
+                        'ANNOUNCEMENT': '📢',
+                        'REMINDER': '⏰',
+                        'WARNING': '⚠️'
+                    };
+                    
+                    const targetText = notification.toUserId ? 'Cá nhân' : 'Tất cả giảng viên';
+                    const attachmentIcon = notification.attachmentUrls && notification.attachmentUrls.length > 0 ? '📎' : '';
+                    
+                    li.innerHTML = `
+                        <div style="flex: 1;">
+                            <p><strong>${priorityIcons[notification.priority] || '🟡'} ${typeIcons[notification.type] || '📢'} ${notification.title} ${attachmentIcon}</strong></p>
+                            <p style="font-size: 12px; color: #666;">${notification.message}</p>
+                            <p style="font-size: 10px; color: #999;">Gửi đến: ${targetText} - ${new Date(notification.createdAt).toLocaleString('vi-VN')}</p>
+                            ${notification.attachmentUrls && notification.attachmentUrls.length > 0 ? 
+                                `<p style="font-size: 10px; color: #3498db;"><i class="fas fa-paperclip"></i> ${notification.attachmentUrls.length} tệp đính kèm</p>` : ''}
+                        </div>
+                        <div style="display: flex; gap: 5px;">
+                            <i class='bx bx-show' onclick="viewNotificationDetail('${notification.id}')" style="cursor: pointer; color: #3498db;" title="Xem chi tiết"></i>
+                            <i class='bx bx-trash' onclick="deleteNotification('${notification.id}')" style="cursor: pointer; color: #ff4757;" title="Xóa thông báo"></i>
+                            <i class='bx bx-dots-vertical-rounded'></i>
+                        </div>
+                    `;
+                    li.style.display = 'flex';
+                    li.style.alignItems = 'flex-start';
+                    li.style.justifyContent = 'space-between';
+                    notificationsList.appendChild(li);
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error loading notifications:', error);
+        });
+}
+
+function deleteNotification(notificationId) {
+    if (confirm('Bạn có chắc chắn muốn xóa thông báo này?')) {
+        // Try fetch API first
+        fetch(`/admin/api/notifications/${notificationId}/delete`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            credentials: 'same-origin'
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Delete response:', data);
+            if (data.success) {
+                loadRecentNotifications(); // Reload notifications
+                alert('Thông báo đã được xóa thành công');
+            } else {
+                alert('Lỗi: ' + (data.message || 'Không thể xóa thông báo'));
+            }
+        })
+        .catch(error => {
+            console.error('Fetch API failed, trying form submission:', error);
+            // Fallback to form submission for better browser compatibility
+            deleteNotificationWithForm(notificationId);
+        });
+    }
+}
+
+function deleteNotificationWithForm(notificationId) {
+    // Create a hidden form to submit the delete request
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = `/admin/api/notifications/${notificationId}/delete`;
+    form.style.display = 'none';
+    
+    // Add CSRF token if available
+    const csrfToken = document.querySelector('meta[name="_csrf"]');
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]');
+    
+    if (csrfToken && csrfHeader) {
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = '_token';
+        csrfInput.value = csrfToken.getAttribute('content');
+        form.appendChild(csrfInput);
+    }
+    
+    document.body.appendChild(form);
+    
+    // Submit form and handle response
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', form.action, true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4) {
+                document.body.removeChild(form);
+                
+                if (xhr.status === 200) {
+                    try {
+                        const data = JSON.parse(xhr.responseText);
+                        if (data.success) {
+                            loadRecentNotifications();
+                            alert('Thông báo đã được xóa thành công');
+                        } else {
+                            alert('Lỗi: ' + (data.message || 'Không thể xóa thông báo'));
+                        }
+                    } catch (e) {
+                        alert('Có lỗi xảy ra khi xử lý phản hồi');
+                    }
+                } else {
+                    alert('Có lỗi xảy ra khi xóa thông báo (HTTP ' + xhr.status + ')');
+                }
+            }
+        };
+        
+        xhr.send();
+    });
+    
+    form.submit();
+}
+
+function loadTeachers() {
+    fetch('/admin/api/teachers')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const select = document.getElementById('targetTeacher');
+                // Keep the first option
+                const firstOption = select.firstElementChild;
+                select.innerHTML = '';
+                select.appendChild(firstOption);
+                
+                data.teachers.forEach(teacher => {
+                    const option = document.createElement('option');
+                    option.value = teacher.id;
+                    option.textContent = teacher.name + ' (' + teacher.email + ')';
+                    select.appendChild(option);
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error loading teachers:', error);
+        });
+}
+
+let currentNotificationId = null;
+
+function viewNotificationDetail(notificationId) {
+    fetch(`/admin/api/notifications/${notificationId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const notification = data.notification;
+                currentNotificationId = notificationId;
+                
+                const priorityLabels = {
+                    'HIGH': 'Quan trọng',
+                    'MEDIUM': 'Bình thường',
+                    'LOW': 'Thấp'
+                };
+                
+                const typeLabels = {
+                    'ANNOUNCEMENT': 'Thông báo',
+                    'REMINDER': 'Nhắc nhở',
+                    'WARNING': 'Cảnh báo'
+                };
+                
+                const targetText = notification.toUserId ? 'Cá nhân' : 'Tất cả giảng viên';
+                
+                let attachmentsHtml = '';
+                if (notification.attachmentUrls && notification.attachmentUrls.length > 0) {
+                    attachmentsHtml = `
+                        <div style="margin-bottom: 15px;">
+                            <strong>Tệp đính kèm:</strong><br>
+                            <div style="background: #f8f9fa; padding: 10px; border-radius: 4px; margin-top: 5px;">
+                                ${notification.attachmentUrls.map((url, index) => `
+                                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid #eee;">
+                                        <span style="flex: 1;">
+                                            <i class="fas fa-file"></i> ${notification.attachmentNames[index] || 'Tệp đính kèm'}
+                                            <small style="color: #666; margin-left: 10px;">(${formatFileSize(notification.attachmentSizes[index] || 0)})</small>
+                                        </span>
+                                        <a href="/admin/api/notifications/${notification.id}/download/${index}" 
+                                           style="color: #3498db; text-decoration: none; padding: 2px 8px; border: 1px solid #3498db; border-radius: 3px; font-size: 12px;"
+                                           target="_blank">Tải xuống</a>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                document.getElementById('notificationDetailContent').innerHTML = `
+                    <div style="margin-bottom: 15px;">
+                        <strong>Tiêu đề:</strong> ${notification.title}
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <strong>Nội dung:</strong><br>
+                        <div style="background: #f8f9fa; padding: 10px; border-radius: 4px; margin-top: 5px;">
+                            ${notification.message}
+                        </div>
+                    </div>
+                    ${attachmentsHtml}
+                    <div style="margin-bottom: 15px;">
+                        <strong>Gửi đến:</strong> ${targetText}
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <strong>Mức độ ưu tiên:</strong> ${priorityLabels[notification.priority] || notification.priority}
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <strong>Loại:</strong> ${typeLabels[notification.type] || notification.type}
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <strong>Ngày tạo:</strong> ${new Date(notification.createdAt).toLocaleString('vi-VN')}
+                    </div>
+                    ${notification.updatedAt ? `<div style="margin-bottom: 15px;">
+                        <strong>Cập nhật lần cuối:</strong> ${new Date(notification.updatedAt).toLocaleString('vi-VN')}
+                    </div>` : ''}
+                    <div style="margin-bottom: 15px;">
+                        <strong>Trạng thái:</strong> ${notification.read ? 'Đã đọc' : 'Chưa đọc'}
+                    </div>
+                `;
+                
+                document.getElementById('notificationDetailModal').style.display = 'block';
+            } else {
+                alert('Lỗi: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error loading notification detail:', error);
+            alert('Có lỗi xảy ra khi tải chi tiết thông báo');
+        });
+}
+
+function closeNotificationModal() {
+    document.getElementById('notificationDetailModal').style.display = 'none';
+    currentNotificationId = null;
+}
+
+function editNotification() {
+    if (!currentNotificationId) return;
+    
+    fetch(`/admin/api/notifications/${currentNotificationId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const notification = data.notification;
+                
+                document.getElementById('editNotificationId').value = notification.id;
+                document.getElementById('editNotificationTitle').value = notification.title;
+                document.getElementById('editNotificationMessage').value = notification.message;
+                document.getElementById('editNotificationPriority').value = notification.priority;
+                document.getElementById('editNotificationType').value = notification.type;
+                
+                document.getElementById('notificationDetailModal').style.display = 'none';
+                document.getElementById('editNotificationModal').style.display = 'block';
+            }
+        })
+        .catch(error => {
+            console.error('Error loading notification for edit:', error);
+        });
+}
+
+function closeEditModal() {
+    document.getElementById('editNotificationModal').style.display = 'none';
+}
+
+// Handle edit notification form submission
+document.getElementById('editNotificationForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData();
+    formData.append('title', document.getElementById('editNotificationTitle').value);
+    formData.append('message', document.getElementById('editNotificationMessage').value);
+    formData.append('priority', document.getElementById('editNotificationPriority').value);
+    formData.append('type', document.getElementById('editNotificationType').value);
+    
+    const notificationId = document.getElementById('editNotificationId').value;
+    
+    fetch(`/admin/api/notifications/${notificationId}/update`, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Cập nhật thông báo thành công!');
+            closeEditModal();
+            loadRecentNotifications();
+        } else {
+            alert('Lỗi: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error updating notification:', error);
+        alert('Có lỗi xảy ra khi cập nhật thông báo');
+    });
+});
+</script>
+
+<script src="/js/script_admin.js"></script>
+</body>
+</html>

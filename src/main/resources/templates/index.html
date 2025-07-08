@@ -1,0 +1,1561 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Esoclusty - The Ultimate E-Learning Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        :root {
+            --primary-color: #7d3cf7;
+            --secondary-color: #5e17eb;
+            --accent-color: #ffcc00;
+            --text-dark: #333333;
+            --text-light: #ffffff;
+            --text-muted: #888888;
+            --bg-light: #f8f9fa;
+            --bg-dark: #111827;
+            --border-color: #e2e8f0;
+            --danger-color: #ef4444;
+            --transition: all 0.3s ease;
+            --border-radius: 12px;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-weight: 700;
+            font-size: 24px;
+            color: var(--primary-color);
+        }
+        
+        .logo i {
+            margin-right: 10px;
+            font-size: 28px;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 30px;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+        
+        .auth-buttons {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* User Menu Styles */
+        .user-menu {
+            position: relative;
+        }
+
+        .user-avatar-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(125, 60, 247, 0.1);
+        }
+
+        .user-avatar-section:hover {
+            background: rgba(125, 60, 247, 0.15);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid var(--primary-color);
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-name {
+            font-weight: 500;
+            color: var(--text-dark);
+            font-size: 14px;
+        }
+
+        .dropdown-arrow {
+            font-size: 12px;
+            color: var(--text-muted);
+            transition: transform 0.3s ease;
+        }
+
+        .user-avatar-section.active .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        /* Dropdown Menu */
+        .user-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            border: 1px solid var(--border-color);
+            min-width: 280px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            margin-top: 10px;
+        }
+
+        .user-dropdown.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            background: linear-gradient(135deg, rgba(125, 60, 247, 0.05), rgba(94, 23, 235, 0.05));
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar-large {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid var(--primary-color);
+        }
+
+        .user-avatar-large img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-details {
+            flex: 1;
+        }
+
+        .user-name-large {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .user-email {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .dropdown-menu {
+            padding: 10px 0;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            color: var(--text-dark);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(125, 60, 247, 0.05);
+            color: var(--primary-color);
+        }
+
+        .dropdown-item i {
+            width: 16px;
+            font-size: 14px;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 8px 0;
+        }
+
+        .logout-item:hover {
+            background: rgba(239, 68, 68, 0.05);
+            color: var(--danger-color);
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border-radius: 30px;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            margin-right: 15px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .hero {
+            padding: 180px 0 100px;
+            background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+            color: var(--text-light);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            width: 140%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            transform: rotate(-45deg);
+            top: -50%;
+            left: -20%;
+        }
+        
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+        
+        .hero p {
+            font-size: 18px;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+        
+        .hero-buttons {
+            margin-top: 30px;
+        }
+        
+        .hero-buttons .btn {
+            margin: 0 10px;
+            padding: 15px 30px;
+            font-size: 16px;
+        }
+        
+        .btn-secondary {
+            background-color: var(--text-light);
+            color: var(--primary-color);
+        }
+        
+        .btn-secondary:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .features {
+            padding: 100px 0;
+            background-color: #fff;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .section-title h2 {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--text-dark);
+            position: relative;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+        
+        .section-title h2::after {
+            content: '';
+            position: absolute;
+            width: 50px;
+            height: 3px;
+            background-color: var(--primary-color);
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .section-title p {
+            font-size: 18px;
+            color: var(--text-muted);
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .feature-card {
+            background-color: #fff;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 30px;
+            text-align: center;
+            transition: var(--transition);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background-color: rgba(125, 60, 247, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+        
+        .feature-icon i {
+            font-size: 28px;
+            color: var(--primary-color);
+        }
+        
+        .feature-card h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .feature-card p {
+            color: var(--text-muted);
+        }
+        
+        .courses {
+            padding: 100px 0;
+            background-color: var(--bg-light);
+        }
+        
+        .course-grid {
+            position: relative;
+            overflow: hidden;
+            padding: 0 50px;
+        }
+        
+        .course-slider {
+            display: flex;
+            transition: transform 0.5s ease;
+            gap: 30px;
+        }
+        
+        .course-card {
+            background-color: #fff;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            min-width: 350px;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+        
+        .course-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .course-card:hover .course-image img {
+            transform: scale(1.05);
+        }
+        
+        .course-image {
+            height: 200px;
+            background-color: #e9ecef;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .course-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        
+        .course-level {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+            text-transform: capitalize;
+        }
+        
+        .course-level.beginner {
+            background-color: var(--success-color);
+        }
+        
+        .course-level.intermediate {
+            background-color: var(--warning-color);
+        }
+        
+        .course-level.advanced {
+            background-color: var(--danger-color);
+        }
+        
+        .course-level.expert {
+            background-color: #8b5cf6;
+        }
+        
+        .course-content {
+            padding: 20px;
+        }
+        
+        .course-category {
+            color: var(--primary-color);
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        
+        .course-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+        
+        .course-instructor {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        
+        .course-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .course-rating {
+            display: flex;
+            align-items: center;
+        }
+        
+        .course-rating i {
+            color: #ffcc00;
+            margin-right: 5px;
+        }
+        
+        .course-price {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .testimonials {
+            padding: 100px 0;
+            background-color: #fff;
+        }
+        
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+        
+        .testimonial-card {
+            background-color: var(--bg-light);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            position: relative;
+        }
+        
+        .testimonial-content {
+            font-style: italic;
+            margin-bottom: 20px;
+            color: var(--text-dark);
+        }
+        
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+        }
+        
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-right: 15px;
+        }
+        
+        .author-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .author-info h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .author-info p {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+        
+        .cta {
+            padding: 100px 0;
+            background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+            color: var(--text-light);
+            text-align: center;
+        }
+        
+        .cta-content {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .cta h2 {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        
+        .cta p {
+            font-size: 18px;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+        
+        .footer {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            padding: 80px 0 30px;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+        
+        .footer-col h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-links a {
+            color: #a1a1a1;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .footer-links a:hover {
+            color: var(--text-light);
+        }
+        
+        .social-links {
+            display: flex;
+            margin-top: 20px;
+        }
+        
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-light);
+            margin-right: 10px;
+            transition: var(--transition);
+        }
+        
+        .social-links a:hover {
+            background-color: var(--primary-color);
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .footer-bottom p {
+            color: #a1a1a1;
+            font-size: 14px;
+        }
+        
+        .slider-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+        
+        .slider-nav:hover {
+            background: var(--secondary-color);
+            transform: translateY(-50%) scale(1.1);
+        }
+        
+        .slider-nav.prev {
+            left: 10px;
+        }
+        
+        .slider-nav.next {
+            right: 10px;
+        }
+        
+        .slider-nav:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: translateY(-50%) scale(1);
+        }
+        
+        .slider-dots {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ddd;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .dot.active {
+            background: var(--primary-color);
+            transform: scale(1.2);
+        }
+        
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                padding: 15px 0;
+            }
+            
+            .nav-links {
+                flex-direction: column;
+                width: 100%;
+                margin-top: 20px;
+                display: none;
+            }
+            
+            .nav-links li {
+                margin: 10px 0;
+                text-align: center;
+            }
+            
+            .auth-buttons {
+                width: 100%;
+                justify-content: center;
+                margin-top: 20px;
+                display: none;
+            }
+            
+            .menu-toggle {
+                display: block;
+                position: absolute;
+                right: 20px;
+                top: 20px;
+                font-size: 24px;
+                cursor: pointer;
+            }
+            
+            .hero {
+                padding: 150px 0 80px;
+            }
+            
+            .hero h1 {
+                font-size: 36px;
+            }
+            
+            .hero p {
+                font-size: 16px;
+            }
+            
+            .section-title h2 {
+                font-size: 28px;
+            }
+            
+            /* Course slider responsive */
+            .course-grid {
+                padding: 0 20px;
+            }
+            
+            .course-card {
+                min-width: 280px;
+            }
+            
+            .slider-nav {
+                width: 35px;
+                height: 35px;
+                font-size: 14px;
+            }
+            
+            .slider-nav.prev {
+                left: 5px;
+            }
+            
+            .slider-nav.next {
+                right: 5px;
+            }
+            
+            .course-content {
+                padding: 15px;
+            }
+            
+            .course-title {
+                font-size: 16px;
+            }
+            
+            .course-instructor {
+                font-size: 13px;
+            }
+            
+            .course-footer {
+                padding: 12px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <div class="logo">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>Esoclusty</span>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#courses">Courses</a></li>
+                    <li><a href="#testimonials">Testimonials</a></li>
+                    <li><a href="#pricing">Pricing</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+                <div class="auth-buttons">
+                    <div th:if="${currentUser != null}">
+                        <div class="user-menu">
+                            <div class="user-avatar-section">
+                                <div class="user-avatar">
+                                    <img th:src="${currentUser.avatarUrl != null ? currentUser.avatarUrl : 'https://ui-avatars.com/api/?name=' + currentUser.name + '&background=7d3cf7&color=fff&size=40'}" 
+                                         th:alt="${currentUser.name}">
+                                </div>
+                                <span class="user-name" th:text="${currentUser.name}">User</span>
+                                <i class="fas fa-chevron-down dropdown-arrow"></i>
+                            </div>
+                            
+                            <div class="user-dropdown">
+                                <div class="dropdown-header">
+                                    <div class="user-info">
+                                        <div class="user-avatar-large">
+                                            <img th:src="${currentUser.avatarUrl != null ? currentUser.avatarUrl : 'https://ui-avatars.com/api/?name=' + currentUser.name + '&background=7d3cf7&color=fff&size=60'}" 
+                                                 th:alt="${currentUser.name}">
+                                        </div>
+                                        <div class="user-details">
+                                            <div class="user-name-large" th:text="${currentUser.name}">User Name</div>
+                                            <div class="user-email" th:text="${currentUser.email}">user@example.com</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="dropdown-menu">
+                                    <a th:if="${currentUser.role.name() == 'ADMIN'}" th:href="@{/admin/dashboard}" class="dropdown-item">
+                                        <i class="fas fa-tachometer-alt"></i>
+                                        <span>Dashboard</span>
+                                    </a>
+                                    <a th:if="${currentUser.role.name() == 'TEACHER'}" th:href="@{/teacher/dashboard}" class="dropdown-item">
+                                        <i class="fas fa-tachometer-alt"></i>
+                                        <span>Dashboard</span>
+                                    </a>
+                                    <a th:if="${currentUser.role.name() == 'STUDENT'}" th:href="@{/student/dashboard}" class="dropdown-item">
+                                        <i class="fas fa-tachometer-alt"></i>
+                                        <span>Dashboard</span>
+                                    </a>
+                                    <a th:if="${currentUser.role.name() == 'ADMIN'}" th:href="@{/admin/profile}" class="dropdown-item">
+                                        <i class="fas fa-user"></i>
+                                        <span>Profile</span>
+                                    </a>
+                                    <a th:if="${currentUser.role.name() == 'TEACHER'}" th:href="@{/teacher/profile}" class="dropdown-item">
+                                        <i class="fas fa-user"></i>
+                                        <span>Profile</span>
+                                    </a>
+                                    <a th:if="${currentUser.role.name() == 'STUDENT'}" th:href="@{/student/profile}" class="dropdown-item">
+                                        <i class="fas fa-user"></i>
+                                        <span>Profile</span>
+                                    </a>
+                                    <a href="#" class="dropdown-item">
+                                        <i class="fas fa-cog"></i>
+                                        <span>Settings</span>
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                    <a href="#" onclick="handleLogout()" class="dropdown-item logout-item">
+                                        <i class="fas fa-sign-out-alt"></i>
+                                        <span>Logout</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div th:if="${currentUser == null}">
+                        <a href="/login" class="btn btn-outline">Log In</a>
+                        <a href="/register" class="btn btn-primary">Sign Up</a>
+                    </div>
+                </div>
+                <div class="menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>
+                    Thay đổi trải nghiệm học tập của bạn</h1>
+                <p>Esoclusty là nền tảng học trực tuyến tối ưu được thiết kế để giúp bạn nắm vững các kỹ năng mới, thăng tiến trong sự nghiệp và đạt được mục tiêu học tập của mình. Tham gia cùng hàng ngàn học viên và giảng viên trên toàn thế giới.</p>
+                <div class="hero-buttons">
+                    <a th:href="${currentUser != null} ? '/courses' : '/register'" class="btn btn-secondary">Get Started</a>
+                    <a href="#courses" class="btn btn-outline" style="color: white; border-color: white;">Explore Courses</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-title">
+                <h2>Tại Sao Chọn Esoclusty</h2>
+                <p>Khám phá những tính năng nổi bật làm nên sự khác biệt của nền tảng chúng tôi</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-laptop"></i>
+                    </div>
+                    <h3>Học Tập Tương Tác</h3>
+                    <p>Tham gia với nội dung tương tác, bài kiểm tra và bài tập được thiết kế để nâng cao trải nghiệm học tập của bạn.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>Giảng Viên Chuyên Gia</h3>
+                    <p>Học hỏi từ các chuyên gia trong ngành và các chuyên gia chuyên môn có niềm đam mê giảng dạy.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-certificate"></i>
+                    </div>
+                    <h3>Chứng Chỉ</h3>
+                    <p>Nhận chứng chỉ khi hoàn thành để thể hiện kỹ năng và kiến thức mới của bạn với nhà tuyển dụng.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3>Học Mọi Lúc Mọi Nơi</h3>
+                    <p>Truy cập khóa học của bạn trên mọi thiết bị, bất cứ lúc nào, bất cứ nơi đâu. Hoàn hảo cho việc học trên đường.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <h3>Hỗ Trợ Cộng Đồng</h3>
+                    <p>Kết nối với các sinh viên khác, tham gia thảo luận và học tập cùng nhau một cách hiệu quả.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h3>Học Theo Tốc Độ Của Bạn</h3>
+                    <p>Tham gia các khóa học theo tốc độ riêng của bạn, với quyền truy cập trọn đời vào nội dung sau khi đăng ký.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Courses Section -->
+    <section class="courses" id="courses">
+        <div class="container">
+            <div class="section-title">
+                <h2>Featured Courses</h2>
+                <p>Browse our most popular courses across various categories</p>
+                <div style="margin-top: 20px;">
+                    <a href="/courses" class="btn btn-primary">View All Courses</a>
+                    <a href="/courses" class="btn btn-outline" style="margin-left: 15px;">
+                        <i class="fas fa-search"></i> Browse by Category
+                    </a>
+                </div>
+            </div>
+            <div class="course-grid">
+                <button class="slider-nav prev" id="prevBtn">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="slider-nav next" id="nextBtn">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                
+                <div class="course-slider" id="courseSlider">
+                    <!-- Dynamic courses from database -->
+                    <div th:each="courseData : ${featuredCoursesWithRating}" class="course-card">
+                        <div class="course-image">
+                            <img th:src="${courseData.course.image != null and !courseData.course.image.isEmpty() ? courseData.course.image : 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60'}" 
+                                 th:alt="'Course image: ' + ${courseData.course.title}">
+                            <div class="course-level" 
+                                 th:class="'course-level ' + ${courseData.course.level != null ? courseData.course.level.toString().toLowerCase() : 'beginner'}"
+                                 th:text="${courseData.course.level != null ? courseData.course.level.displayName : 'Beginner'}">
+                            </div>
+                        </div>
+                        <div class="course-content">
+                            <div class="course-category" th:if="${courseData.course.skillCategory != null or courseData.course.jobRole != null}">
+                                <span th:if="${courseData.course.skillCategory != null}" th:text="${courseData.course.skillCategory}">Skill</span>
+                                <span th:if="${courseData.course.skillCategory != null and courseData.course.jobRole != null}"> | </span>
+                                <span th:if="${courseData.course.jobRole != null}" th:text="${courseData.course.jobRole}">Role</span>
+                            </div>
+                            <h3 class="course-title" th:text="${courseData.course.title}">Course Title</h3>
+                            <p class="course-instructor" th:text="'Instructor: ' + ${courseData.course.instructorName}">Instructor Name</p>
+                            <p th:text="${courseData.course.description}">Course description goes here. This is a brief overview of what students can expect to learn.</p>
+                        </div>
+                        <div class="course-footer">
+                            <div class="course-rating">
+                                <i class="fas fa-star" th:style="${courseData.averageRating > 0 ? 'color: #ffd700;' : 'color: #e9ecef;'}"></i>
+                                <span th:if="${courseData.totalReviews > 0}" 
+                                      th:text="${#numbers.formatDecimal(courseData.averageRating, 1, 1)} + ' (' + ${courseData.totalReviews} + ' reviews)'">
+                                    4.8 (120 reviews)
+                                </span>
+                                <span th:if="${courseData.totalReviews == 0}" style="color: #6b7280; font-style: italic; font-size: 13px;">
+                                    No reviews yet
+                                </span>
+                            </div>
+                            <div class="course-price">Free</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Fallback courses if none in database -->
+                    <div th:if="${featuredCourses.isEmpty()}" class="course-card">
+                        <div class="course-image">
+                            <img src="https://images.unsplash.com/photo-1501504905252-473c47e087f8?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1674&q=80" alt="Course Image">
+                            <div class="course-level beginner">Beginner</div>
+                        </div>
+                        <div class="course-content">
+                            <h3 class="course-title">Web Development Bootcamp</h3>
+                            <p class="course-instructor">Instructor: John Doe</p>
+                            <p>Master the fundamentals of web development with HTML, CSS, JavaScript, and more.</p>
+                        </div>
+                        <div class="course-footer">
+                            <div class="course-rating">
+                                <i class="fas fa-star"></i>
+                                <span>4.8 (120 reviews)</span>
+                            </div>
+                            <div class="course-price">$59.99</div>
+                        </div>
+                    </div>
+                    
+                    <div th:if="${featuredCourses.isEmpty()}" class="course-card">
+                        <div class="course-image">
+                            <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80" alt="Course Image">
+                            <div class="course-level intermediate">Intermediate</div>
+                        </div>
+                        <div class="course-content">
+                            <h3 class="course-title">Python Programming for Beginners</h3>
+                            <p class="course-instructor">Instructor: Jane Smith</p>
+                            <p>Learn Python programming from scratch and build real-world applications.</p>
+                        </div>
+                        <div class="course-footer">
+                            <div class="course-rating">
+                                <i class="fas fa-star"></i>
+                                <span>4.9 (85 reviews)</span>
+                            </div>
+                            <div class="course-price">$49.99</div>
+                        </div>
+                    </div>
+                    
+                    <div th:if="${featuredCourses.isEmpty()}" class="course-card">
+                        <div class="course-image">
+                            <img src="https://images.unsplash.com/photo-1535982330050-f1c2fb79ff78?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1374&q=80" alt="Course Image">
+                            <div class="course-level advanced">Advanced</div>
+                        </div>
+                        <div class="course-content">
+                            <h3 class="course-title">Digital Marketing Masterclass</h3>
+                            <p class="course-instructor">Instructor: Alex Johnson</p>
+                            <p>A comprehensive guide to digital marketing strategies and techniques.</p>
+                        </div>
+                        <div class="course-footer">
+                            <div class="course-rating">
+                                <i class="fas fa-star"></i>
+                                <span>4.7 (98 reviews)</span>
+                            </div>
+                            <div class="course-price">$69.99</div>
+                        </div>
+                    </div>
+                    
+                    <div th:if="${featuredCourses.isEmpty()}" class="course-card">
+                        <div class="course-image">
+                            <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80" alt="Course Image">
+                            <div class="course-level expert">Expert</div>
+                        </div>
+                        <div class="course-content">
+                            <h3 class="course-title">Data Science with Machine Learning</h3>
+                            <p class="course-instructor">Instructor: Dr. Sarah Wilson</p>
+                            <p>Advanced data science techniques and machine learning algorithms.</p>
+                        </div>
+                        <div class="course-footer">
+                            <div class="course-rating">
+                                <i class="fas fa-star"></i>
+                                <span>4.9 (156 reviews)</span>
+                            </div>
+                            <div class="course-price">$89.99</div>
+                        </div>
+                    </div>
+                    
+                    <div th:if="${featuredCourses.isEmpty()}" class="course-card">
+                        <div class="course-image">
+                            <img src="https://images.unsplash.com/photo-1560472355-536de3962603?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80" alt="Course Image">
+                            <div class="course-level beginner">Beginner</div>
+                        </div>
+                        <div class="course-content">
+                            <h3 class="course-title">Graphic Design Fundamentals</h3>
+                            <p class="course-instructor">Instructor: Mike Johnson</p>
+                            <p>Learn the basics of graphic design and create stunning visual content.</p>
+                        </div>
+                        <div class="course-footer">
+                            <div class="course-rating">
+                                <i class="fas fa-star"></i>
+                                <span>4.6 (73 reviews)</span>
+                            </div>
+                            <div class="course-price">$39.99</div>
+                        </div>
+                    </div>
+                    
+                    <div th:if="${featuredCourses.isEmpty()}" class="course-card">
+                        <div class="course-image">
+                            <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80" alt="Course Image">
+                            <div class="course-level intermediate">Intermediate</div>
+                        </div>
+                        <div class="course-content">
+                            <h3 class="course-title">Mobile App Development</h3>
+                            <p class="course-instructor">Instructor: Emily Chen</p>
+                            <p>Build mobile applications for iOS and Android platforms.</p>
+                        </div>
+                        <div class="course-footer">
+                            <div class="course-rating">
+                                <i class="fas fa-star"></i>
+                                <span>4.8 (92 reviews)</span>
+                            </div>
+                            <div class="course-price">$79.99</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="slider-dots" id="sliderDots">
+                    <!-- Dots will be generated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials" id="testimonials">
+        <div class="container">
+            <div class="section-title">
+                <h2>Học Viên Nói Gì Về Chúng Tôi</h2>
+                <p>Lắng nghe từ cộng đồng học viên của chúng tôi</p>
+            </div>
+            <div class="testimonial-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        <p>"Esoclusty đã hoàn toàn thay đổi trải nghiệm học tập của tôi. Chất lượng khóa học và giảng viên thật sự xuất sắc. Tôi đã có thể thăng tiến trong sự nghiệp nhờ những kỹ năng mà tôi đã học được ở đây."</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">
+                            <img src="https://randomuser.me/api/portraits/women/43.jpg" alt="Author">
+                        </div>
+                        <div class="author-info">
+                            <h4>Sarah Johnson</h4>
+                            <p>Nhà Thiết Kế UX</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        <p>"Là một người đang muốn chuyển đổi nghề nghiệp, Esoclusty đã cung cấp cho tôi tất cả những tài nguyên mà tôi cần. Các khóa học được cấu trúc tốt và sự hỗ trợ từ cộng đồng thật tuyệt vời."</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">
+                            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Author">
+                        </div>
+                        <div class="author-info">
+                            <h4>Michael Chen</h4>
+                            <p>Lập Trình Viên Phần Mềm</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        <p>"Sự linh hoạt trong việc học theo tốc độ riêng của mình trong khi vẫn có quyền truy cập vào sự hỗ trợ của giảng viên đã khiến Esoclusty trở thành nền tảng hoàn hảo cho tôi. Tôi rất khuyến khích bất kỳ ai muốn nâng cao kỹ năng."</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">
+                            <img src="https://randomuser.me/api/portraits/women/26.jpg" alt="Author">
+                        </div>
+                        <div class="author-info">
+                            <h4>Lisa Rodriguez</h4>
+                            <p>Chuyên Gia Marketing</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Start Your Learning Journey Today</h2>
+                <p>Join thousands of learners from around the world who are already achieving their goals with Esoclusty.</p>
+                <a th:href="${currentUser != null} ? '/courses' : '/register'" class="btn btn-secondary">
+                    <span th:if="${currentUser != null}">Browse Courses</span>
+                    <span th:if="${currentUser == null}">Sign Up Now</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <div class="logo">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>Esoclusty</span>
+                    </div>
+                    <p style="color: #a1a1a1; margin-top: 15px;">Transforming education through technology and innovation.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h3>Company</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Partner With Us</a></li>
+                        <li><a href="#">Press</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h3>Resources</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">FAQ</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h3>Legal</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Cookie Policy</a></li>
+                        <li><a href="#">Accessibility</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 Esoclusty. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Check if user is logged in
+        const isUserLoggedIn = /*[[${currentUser != null}]]*/ false;
+        
+        // User dropdown functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const userAvatarSection = document.querySelector('.user-avatar-section');
+            const userDropdown = document.querySelector('.user-dropdown');
+
+            if (userAvatarSection && userDropdown) {
+                userAvatarSection.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    userAvatarSection.classList.toggle('active');
+                    userDropdown.classList.toggle('show');
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!userAvatarSection.contains(e.target) && !userDropdown.contains(e.target)) {
+                        userAvatarSection.classList.remove('active');
+                        userDropdown.classList.remove('show');
+                    }
+                });
+
+                // Prevent dropdown from closing when clicking inside
+                userDropdown.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+            }
+        });
+        
+        // Mobile menu toggle
+        const menuToggle = document.querySelector('.menu-toggle');
+        const navLinks = document.querySelector('.nav-links');
+        const authButtons = document.querySelector('.auth-buttons');
+        
+        if (menuToggle) {
+            menuToggle.addEventListener('click', () => {
+                navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
+                authButtons.style.display = authButtons.style.display === 'flex' ? 'none' : 'flex';
+            });
+        }
+        
+        // Smooth scroll for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    window.scrollTo({
+                        top: target.offsetTop - 100,
+                        behavior: 'smooth'
+                    });
+                }
+                
+                // Close mobile menu if open
+                if (window.innerWidth <= 768) {
+                    if (navLinks) navLinks.style.display = 'none';
+                    if (authButtons) authButtons.style.display = 'none';
+                }
+            });
+        });
+
+        // Logout function
+        function handleLogout() {
+            if (confirm('Are you sure you want to logout?')) {
+                // Clear any stored data
+                localStorage.removeItem('redirectAfterLogin');
+                
+                // Redirect to logout endpoint
+                window.location.href = '/logout';
+            }
+        }
+
+        // Course enrollment functionality
+        document.addEventListener('click', function(e) {
+            // Check if clicked element is within a course card and has enrollment functionality
+            if (e.target.closest('.course-card')) {
+                const courseCard = e.target.closest('.course-card');
+                const courseTitle = courseCard.querySelector('.course-title').textContent;
+                
+                // For now, we'll handle clicks on the entire course card
+                if (e.target.classList.contains('course-card') || e.target.closest('.course-card')) {
+                    if (!isUserLoggedIn) {
+                        // Store current page URL for redirect after login
+                        localStorage.setItem('redirectAfterLogin', window.location.href);
+                        
+                        if (confirm(`To enroll in "${courseTitle}", you need to login first. Would you like to go to the login page?`)) {
+                            window.location.href = '/login?redirect=' + encodeURIComponent(window.location.href);
+                        }
+                    } else {
+                        // User is logged in, get course ID and redirect to lessons
+                        const courseId = courseCard.dataset.courseId || '1'; // Default to 1 if no ID found
+                        if (confirm(`Would you like to start learning "${courseTitle}"?`)) {
+                            // Store current page as referrer for back navigation
+                            localStorage.setItem('courseReferrer', window.location.href);
+                            window.location.href = `/course/${courseId}/lessons`;
+                        }
+                    }
+                }
+            }
+        });
+
+        // Course Slider functionality
+        class CourseSlider {
+            constructor() {
+                this.slider = document.getElementById('courseSlider');
+                this.prevBtn = document.getElementById('prevBtn');
+                this.nextBtn = document.getElementById('nextBtn');
+                this.dotsContainer = document.getElementById('sliderDots');
+                this.currentIndex = 0;
+                this.cardWidth = 380; // 350px card + 30px gap
+                this.visibleCards = this.getVisibleCards();
+                this.totalCards = 0;
+                this.maxIndex = 0;
+                this.autoPlayInterval = null;
+                this.autoPlayDelay = 5000; // 5 seconds
+
+                this.init();
+            }
+
+            init() {
+                if (!this.slider) return;
+
+                this.totalCards = this.slider.children.length;
+                this.maxIndex = Math.max(0, this.totalCards - this.visibleCards);
+                
+                this.createDots();
+                this.updateSlider();
+                this.bindEvents();
+                this.startAutoPlay();
+                
+                // Update on window resize
+                window.addEventListener('resize', () => {
+                    this.visibleCards = this.getVisibleCards();
+                    this.maxIndex = Math.max(0, this.totalCards - this.visibleCards);
+                    this.currentIndex = Math.min(this.currentIndex, this.maxIndex);
+                    this.updateSlider();
+                    this.createDots();
+                });
+            }
+
+            getVisibleCards() {
+                const containerWidth = this.slider.parentElement.clientWidth - 100; // minus padding
+                return Math.floor(containerWidth / this.cardWidth) || 1;
+            }
+
+            createDots() {
+                if (!this.dotsContainer) return;
+                
+                this.dotsContainer.innerHTML = '';
+                const dotsCount = this.maxIndex + 1;
+                
+                for (let i = 0; i < dotsCount; i++) {
+                    const dot = document.createElement('div');
+                    dot.className = `dot ${i === this.currentIndex ? 'active' : ''}`;
+                    dot.addEventListener('click', () => this.goToSlide(i));
+                    this.dotsContainer.appendChild(dot);
+                }
+            }
+
+            bindEvents() {
+                if (this.prevBtn) {
+                    this.prevBtn.addEventListener('click', () => this.prevSlide());
+                }
+                
+                if (this.nextBtn) {
+                    this.nextBtn.addEventListener('click', () => this.nextSlide());
+                }
+
+                // Pause auto-play on hover
+                this.slider.addEventListener('mouseenter', () => this.stopAutoPlay());
+                this.slider.addEventListener('mouseleave', () => this.startAutoPlay());
+            }
+
+            prevSlide() {
+                this.currentIndex = Math.max(0, this.currentIndex - 1);
+                this.updateSlider();
+                this.resetAutoPlay();
+            }
+
+            nextSlide() {
+                this.currentIndex = Math.min(this.maxIndex, this.currentIndex + 1);
+                this.updateSlider();
+                this.resetAutoPlay();
+            }
+
+            goToSlide(index) {
+                this.currentIndex = Math.max(0, Math.min(this.maxIndex, index));
+                this.updateSlider();
+                this.resetAutoPlay();
+            }
+
+            updateSlider() {
+                if (!this.slider) return;
+
+                const translateX = -this.currentIndex * this.cardWidth;
+                this.slider.style.transform = `translateX(${translateX}px)`;
+
+                // Update navigation buttons
+                if (this.prevBtn) {
+                    this.prevBtn.disabled = this.currentIndex === 0;
+                }
+                if (this.nextBtn) {
+                    this.nextBtn.disabled = this.currentIndex === this.maxIndex;
+                }
+
+                // Update dots
+                const dots = this.dotsContainer?.querySelectorAll('.dot');
+                dots?.forEach((dot, index) => {
+                    dot.classList.toggle('active', index === this.currentIndex);
+                });
+            }
+
+            startAutoPlay() {
+                this.stopAutoPlay();
+                if (this.totalCards > this.visibleCards) {
+                    this.autoPlayInterval = setInterval(() => {
+                        if (this.currentIndex >= this.maxIndex) {
+                            this.currentIndex = 0;
+                        } else {
+                            this.currentIndex++;
+                        }
+                        this.updateSlider();
+                    }, this.autoPlayDelay);
+                }
+            }
+
+            stopAutoPlay() {
+                if (this.autoPlayInterval) {
+                    clearInterval(this.autoPlayInterval);
+                    this.autoPlayInterval = null;
+                }
+            }
+
+            resetAutoPlay() {
+                this.stopAutoPlay();
+                this.startAutoPlay();
+            }
+        }
+
+        // Initialize course slider when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            new CourseSlider();
+        });
+    </script>
+</body>
+</html> 
