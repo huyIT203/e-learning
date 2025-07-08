@@ -700,6 +700,10 @@ function goToLessons(courseId) {
 		}, 1000);
 	}
 
+	// Store current page URL for back button
+	localStorage.setItem('courseReferrer', window.location.href);
+	console.log('Stored courseReferrer from admin:', window.location.href);
+
 	// Navigate to lesson management page - Using general endpoint that supports admin access
 	window.location.href = `/course/${courseId}/lessons`;
 }

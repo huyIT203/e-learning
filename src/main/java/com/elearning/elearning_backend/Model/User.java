@@ -1,7 +1,8 @@
-    package com.elearning.elearning_backend.Model;
+package com.elearning.elearning_backend.Model;
 
-    import java.time.LocalDateTime;
+import java.time.LocalDateTime;
 
+    import jakarta.persistence.Entity;
     import org.springframework.data.annotation.Id;
     import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -12,12 +13,12 @@
     import lombok.Data;
     import lombok.NoArgsConstructor;
 
-    @Document(collection = "users")
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Builder
-    public class User {
+@Document(collection = "users")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class User {
         @Id
         private String id;
         private String name;
@@ -36,4 +37,4 @@
         private String facebookUrl;
         private String githubUrl;
 
-    }
+}
