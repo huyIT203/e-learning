@@ -27,6 +27,9 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
+                .requiresChannel(channel -> channel
+                    .requestMatchers(r -> r.getHeader("X-Forwarded-Proto") != null)
+                    .requiresSecure())
                 .authorizeHttpRequests(auth -> auth
                         // Public endpoints
                         .requestMatchers("/api/auth/**").permitAll()

@@ -46,13 +46,15 @@ public class AuthController {
         // Set cookie for authentication
         ResponseCookie cookie = ResponseCookie.from("auth_token", authResponse.getToken())
                 .httpOnly(true)
-                .secure(false)
+                .secure(true)  // Enable secure flag
                 .path("/")
                 .maxAge(60*60)
+                .sameSite("Strict")  // Add SameSite attribute
                 .build();
                 
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .header("Strict-Transport-Security", "max-age=31536000; includeSubDomains") // Add HSTS header
                 .body(authResponse);
     }
 
@@ -62,12 +64,14 @@ public class AuthController {
 
         ResponseCookie cookie = ResponseCookie.from("auth_token", response.getToken())
                 .httpOnly(true)
-                .secure(false)
+                .secure(true)  // Enable secure flag
                 .path("/")
                 .maxAge(60*60)
+                .sameSite("Strict")  // Add SameSite attribute
                 .build();
         return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE,cookie.toString())
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .header("Strict-Transport-Security", "max-age=31536000; includeSubDomains") // Add HSTS header
                 .body(response);
     }
 
