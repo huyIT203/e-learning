@@ -437,6 +437,10 @@
             display: flex;
             transition: transform 0.5s ease;
             gap: 30px;
+            will-change: transform;
+            touch-action: pan-y;
+            -webkit-user-select: none;
+            user-select: none;
         }
         
         .course-card {
@@ -448,6 +452,9 @@
             min-width: 350px;
             flex-shrink: 0;
             cursor: pointer;
+            will-change: transform;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
         }
         
         .course-card:hover {
@@ -471,6 +478,9 @@
             height: 100%;
             object-fit: cover;
             transition: transform 0.3s ease;
+            will-change: transform;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
         }
         
         .course-level {
@@ -1387,7 +1397,7 @@
 
         // Course enrollment functionality
         document.addEventListener('click', function(e) {
-            // Check if clicked element is within a course card and has enrollment functionality
+            // Check if clicked element is within a course card
             if (e.target.closest('.course-card')) {
                 const courseCard = e.target.closest('.course-card');
                 const courseTitle = courseCard.querySelector('.course-title').textContent;
@@ -1397,32 +1407,12 @@
                     // Store current page URL for redirect after login
                     localStorage.setItem('redirectAfterLogin', window.location.href);
                     
-                    if (confirm(`To enroll in "${courseTitle}", you need to login first. Would you like to go to the login page?`)) {
+                    if (confirm(`To view "${courseTitle}", you need to login first. Would you like to go to the login page?`)) {
                         window.location.href = '/login?redirect=' + encodeURIComponent(window.location.href);
                     }
                 } else {
-                    // Check if user is enrolled
-                    fetch(`/api/student/courses/${courseId}/check-enrollment`, {
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.enrolled) {
-                            // User is enrolled, redirect to lessons
-                            window.location.href = `/course/${courseId}/lessons`;
-                        } else {
-                            // User is not enrolled, redirect to course details
-                            window.location.href = `/course/${courseId}`;
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error checking enrollment:', error);
-                        // On error, redirect to course details
-                        window.location.href = `/course/${courseId}`;
-                    });
+                    // User is logged in, redirect directly to course lessons
+                    window.location.href = `/course/${courseId}/lessons`;
                 }
             }
         });
@@ -1441,6 +1431,7 @@
                 this.maxIndex = 0;
                 this.autoPlayInterval = null;
                 this.autoPlayDelay = 5000; // 5 seconds
+                this.isAnimating = false;
 
                 this.init();
             }
@@ -1449,40 +1440,36 @@
                 if (!this.slider) return;
 
                 this.totalCards = this.slider.children.length;
-                this.maxIndex = Math.max(0, this.totalCards - this.visibleCards);
+                if (this.totalCards === 0) return;
+
+                // Clone first and last cards for infinite loop
+                const firstCardClone = this.slider.children[0].cloneNode(true);
+                const lastCardClone = this.slider.children[this.totalCards - 1].cloneNode(true);
+                this.slider.appendChild(firstCardClone);
+                this.slider.insertBefore(lastCardClone, this.slider.firstChild);
+
+                // Update total cards count after adding clones
+                this.totalCards += 2;
+                this.maxIndex = this.totalCards - this.visibleCards;
                 
-                this.createDots();
-                this.updateSlider();
+                // Set initial position to first real card
+                this.currentIndex = 1;
+                this.updateSlider(false);
+                
                 this.bindEvents();
                 this.startAutoPlay();
                 
                 // Update on window resize
                 window.addEventListener('resize', () => {
                     this.visibleCards = this.getVisibleCards();
-                    this.maxIndex = Math.max(0, this.totalCards - this.visibleCards);
-                    this.currentIndex = Math.min(this.currentIndex, this.maxIndex);
-                    this.updateSlider();
-                    this.createDots();
+                    this.maxIndex = this.totalCards - this.visibleCards;
+                    this.updateSlider(false);
                 });
             }
 
             getVisibleCards() {
                 const containerWidth = this.slider.parentElement.clientWidth - 100; // minus padding
                 return Math.floor(containerWidth / this.cardWidth) || 1;
-            }
-
-            createDots() {
-                if (!this.dotsContainer) return;
-                
-                this.dotsContainer.innerHTML = '';
-                const dotsCount = this.maxIndex + 1;
-                
-                for (let i = 0; i < dotsCount; i++) {
-                    const dot = document.createElement('div');
-                    dot.className = `dot ${i === this.currentIndex ? 'active' : ''}`;
-                    dot.addEventListener('click', () => this.goToSlide(i));
-                    this.dotsContainer.appendChild(dot);
-                }
             }
 
             bindEvents() {
@@ -1494,47 +1481,67 @@
                     this.nextBtn.addEventListener('click', () => this.nextSlide());
                 }
 
+                // Add transition end event listener
+                this.slider.addEventListener('transitionend', () => this.handleTransitionEnd());
+
                 // Pause auto-play on hover
                 this.slider.addEventListener('mouseenter', () => this.stopAutoPlay());
                 this.slider.addEventListener('mouseleave', () => this.startAutoPlay());
             }
 
+            handleTransitionEnd() {
+                this.isAnimating = false;
+                
+                // If we're at the cloned last card, jump to real last card
+                if (this.currentIndex === 0) {
+                    this.currentIndex = this.totalCards - 2;
+                    this.updateSlider(false);
+                }
+                // If we're at the cloned first card, jump to real first card
+                else if (this.currentIndex === this.totalCards - 1) {
+                    this.currentIndex = 1;
+                    this.updateSlider(false);
+                }
+            }
+
             prevSlide() {
-                this.currentIndex = Math.max(0, this.currentIndex - 1);
-                this.updateSlider();
+                if (this.isAnimating) return;
+                this.isAnimating = true;
+                this.currentIndex--;
+                this.updateSlider(true);
                 this.resetAutoPlay();
             }
 
             nextSlide() {
-                this.currentIndex = Math.min(this.maxIndex, this.currentIndex + 1);
-                this.updateSlider();
+                if (this.isAnimating) return;
+                this.isAnimating = true;
+                this.currentIndex++;
+                this.updateSlider(true);
                 this.resetAutoPlay();
             }
 
-            goToSlide(index) {
-                this.currentIndex = Math.max(0, Math.min(this.maxIndex, index));
-                this.updateSlider();
-                this.resetAutoPlay();
-            }
-
-            updateSlider() {
+            updateSlider(animate = true) {
                 if (!this.slider) return;
 
                 const translateX = -this.currentIndex * this.cardWidth;
+                this.slider.style.transition = animate ? 'transform 0.5s ease' : 'none';
                 this.slider.style.transform = `translateX(${translateX}px)`;
 
                 // Update navigation buttons
                 if (this.prevBtn) {
-                    this.prevBtn.disabled = this.currentIndex === 0;
+                    this.prevBtn.disabled = false;
                 }
                 if (this.nextBtn) {
-                    this.nextBtn.disabled = this.currentIndex === this.maxIndex;
+                    this.nextBtn.disabled = false;
                 }
 
-                // Update dots
+                // Update dots to reflect real position (excluding clones)
+                const realIndex = this.currentIndex === 0 ? this.totalCards - 3 : 
+                                this.currentIndex === this.totalCards - 1 ? 0 :
+                                this.currentIndex - 1;
                 const dots = this.dotsContainer?.querySelectorAll('.dot');
                 dots?.forEach((dot, index) => {
-                    dot.classList.toggle('active', index === this.currentIndex);
+                    dot.classList.toggle('active', index === realIndex);
                 });
             }
 
@@ -1542,12 +1549,7 @@
                 this.stopAutoPlay();
                 if (this.totalCards > this.visibleCards) {
                     this.autoPlayInterval = setInterval(() => {
-                        if (this.currentIndex >= this.maxIndex) {
-                            this.currentIndex = 0;
-                        } else {
-                            this.currentIndex++;
-                        }
-                        this.updateSlider();
+                        this.nextSlide();
                     }, this.autoPlayDelay);
                 }
             }

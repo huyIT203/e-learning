@@ -1,6 +1,7 @@
 package com.elearning.elearning_backend.Controller;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -168,14 +169,11 @@ public class AuthPageController {
         // Add user to model (will be null if not authenticated)
         model.addAttribute("currentUser", currentUser);
 
-        List<Course> featuredCourses = courseService.getPublishedCourses(); // Only show published courses
-        if (featuredCourses.size() > 6) {
-            featuredCourses = featuredCourses.subList(0, 6);
-        }
-
+        List<Course> publishedCourses = courseService.getPublishedCourses(); // Only show published courses
+        
         // Create featured courses data with rating information
-        List<Map<String, Object>> featuredCoursesWithRating = new ArrayList<>();
-        for (Course course : featuredCourses) {
+        List<Map<String, Object>> coursesWithRating = new ArrayList<>();
+        for (Course course : publishedCourses) {
             Map<String, Object> courseData = new HashMap<>();
             courseData.put("course", course);
             
@@ -187,11 +185,31 @@ public class AuthPageController {
             courseData.put("averageRating", averageRating);
             courseData.put("totalReviews", totalComments);
             
-            featuredCoursesWithRating.add(courseData);
+            coursesWithRating.add(courseData);
         }
 
-        model.addAttribute("featuredCourses", featuredCourses);
-        model.addAttribute("featuredCoursesWithRating", featuredCoursesWithRating);
+        // Sort courses by rating (highest first)
+        Collections.sort(coursesWithRating, (a, b) -> {
+            double ratingA = (double) a.get("averageRating");
+            double ratingB = (double) b.get("averageRating");
+            if (ratingB != ratingA) {
+                return Double.compare(ratingB, ratingA);
+            }
+            // If ratings are equal, sort by number of reviews
+            long reviewsA = (long) a.get("totalReviews");
+            long reviewsB = (long) b.get("totalReviews");
+            return Long.compare(reviewsB, reviewsA);
+        });
+
+        // Take top 7 courses
+        if (coursesWithRating.size() > 7) {
+            coursesWithRating = coursesWithRating.subList(0, 7);
+        }
+
+        model.addAttribute("featuredCourses", coursesWithRating.stream()
+            .map(data -> (Course) data.get("course"))
+            .collect(Collectors.toList()));
+        model.addAttribute("featuredCoursesWithRating", coursesWithRating);
         return "index";
     }
 
