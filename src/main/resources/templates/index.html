@@ -1032,7 +1032,7 @@
                 
                 <div class="course-slider" id="courseSlider">
                     <!-- Dynamic courses from database -->
-                    <div th:each="courseData : ${featuredCoursesWithRating}" class="course-card">
+                    <div th:each="courseData : ${featuredCoursesWithRating}" class="course-card" th:data-course-id="${courseData.course.id}">
                         <div class="course-image">
                             <img th:src="${courseData.course.image != null and !courseData.course.image.isEmpty() ? courseData.course.image : 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60'}" 
                                  th:alt="'Course image: ' + ${courseData.course.title}">
@@ -1310,7 +1310,7 @@
 
     <script>
         // Check if user is logged in
-        const isUserLoggedIn = /*[[${currentUser != null}]]*/ false;
+        const isUserLoggedIn = [[${currentUser != null}]];
         
         // User dropdown functionality
         document.addEventListener('DOMContentLoaded', function() {
@@ -1391,25 +1391,38 @@
             if (e.target.closest('.course-card')) {
                 const courseCard = e.target.closest('.course-card');
                 const courseTitle = courseCard.querySelector('.course-title').textContent;
+                const courseId = courseCard.dataset.courseId;
                 
-                // For now, we'll handle clicks on the entire course card
-                if (e.target.classList.contains('course-card') || e.target.closest('.course-card')) {
-                    if (!isUserLoggedIn) {
-                        // Store current page URL for redirect after login
-                        localStorage.setItem('redirectAfterLogin', window.location.href);
-                        
-                        if (confirm(`To enroll in "${courseTitle}", you need to login first. Would you like to go to the login page?`)) {
-                            window.location.href = '/login?redirect=' + encodeURIComponent(window.location.href);
-                        }
-                    } else {
-                        // User is logged in, get course ID and redirect to lessons
-                        const courseId = courseCard.dataset.courseId || '1'; // Default to 1 if no ID found
-                        if (confirm(`Would you like to start learning "${courseTitle}"?`)) {
-                            // Store current page as referrer for back navigation
-                            localStorage.setItem('courseReferrer', window.location.href);
-                            window.location.href = `/course/${courseId}/lessons`;
-                        }
+                if (!isUserLoggedIn) {
+                    // Store current page URL for redirect after login
+                    localStorage.setItem('redirectAfterLogin', window.location.href);
+                    
+                    if (confirm(`To enroll in "${courseTitle}", you need to login first. Would you like to go to the login page?`)) {
+                        window.location.href = '/login?redirect=' + encodeURIComponent(window.location.href);
                     }
+                } else {
+                    // Check if user is enrolled
+                    fetch(`/api/student/courses/${courseId}/check-enrollment`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.enrolled) {
+                            // User is enrolled, redirect to lessons
+                            window.location.href = `/course/${courseId}/lessons`;
+                        } else {
+                            // User is not enrolled, redirect to course details
+                            window.location.href = `/course/${courseId}`;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error checking enrollment:', error);
+                        // On error, redirect to course details
+                        window.location.href = `/course/${courseId}`;
+                    });
                 }
             }
         });

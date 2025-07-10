@@ -1,6 +1,7 @@
 package com.elearning.elearning_backend.Controller;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -270,6 +271,17 @@ public class StudentController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Failed to enroll: " + e.getMessage());
         }
+    }
+
+    @GetMapping("/student/courses/{courseId}/check-enrollment")
+    public ResponseEntity<Map<String, Boolean>> checkEnrollment(@PathVariable String courseId) {
+        User user = getCurrentUser();
+        if (user == null) {
+            return ResponseEntity.status(401).body(Collections.singletonMap("enrolled", false));
+        }
+        
+        boolean isEnrolled = courseService.isUserEnrolledInCourse(courseId, user.getId());
+        return ResponseEntity.ok(Collections.singletonMap("enrolled", isEnrolled));
     }
 
     @Data
