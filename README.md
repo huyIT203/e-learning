@@ -194,6 +194,9 @@ src/main/resources/
 - `com.vladsch.flexmark:flexmark-all` - Markdown processing
 - `org.springframework.boot:spring-boot-starter-websocket` - WebSocket support
 
+## Documentation
+- Vietnamese docs: `docs/vi/README.md`
+
 ## Contact
 
 For any inquiries or support, please contact:
