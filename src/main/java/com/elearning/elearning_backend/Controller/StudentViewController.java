@@ -28,6 +28,7 @@ import com.elearning.elearning_backend.Model.User;
 import com.elearning.elearning_backend.Repository.UserRepository;
 import com.elearning.elearning_backend.Service.CourseService;
 import com.elearning.elearning_backend.Service.LessonProgressService;
+import com.elearning.elearning_backend.Service.S3Service;
 
 import lombok.RequiredArgsConstructor;
 
@@ -39,6 +40,7 @@ public class StudentViewController {
     private final UserRepository userRepository;
     private final CourseService courseService;
     private final LessonProgressService lessonProgressService;
+    private final S3Service s3Service;
 
     private User getCurrentUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -264,7 +266,6 @@ public class StudentViewController {
                 return ResponseEntity.badRequest().body(response);
             }
 
-            // Update user information
             currentUser.setName(name);
             currentUser.setPhone(phone);
             currentUser.setDob(dob);
@@ -273,26 +274,10 @@ public class StudentViewController {
             currentUser.setGithubUrl(githubUrl);
             currentUser.setBio(bio);
 
-            // Handle avatar upload
             if (avatar != null && !avatar.isEmpty()) {
                 try {
-                    // Create uploads directory if it doesn't exist
-                    Path uploadsDir = Paths.get("uploads/avatars");
-                    if (!Files.exists(uploadsDir)) {
-                        Files.createDirectories(uploadsDir);
-                    }
-                    
-                    // Generate unique filename
-                    String originalFilename = avatar.getOriginalFilename();
-                    String fileExtension = originalFilename != null && originalFilename.contains(".") 
-                        ? originalFilename.substring(originalFilename.lastIndexOf("."))
-                        : ".jpg";
-                    String avatarFileName = UUID.randomUUID().toString() + fileExtension;
-                    Path avatarPath = uploadsDir.resolve(avatarFileName);
-                    
-                    // Save file
-                    Files.copy(avatar.getInputStream(), avatarPath);
-                    currentUser.setAvatarUrl("/uploads/avatars/" + avatarFileName);
+                    String avatarUrl = s3Service.uploadFile("avatars", avatar);
+                    currentUser.setAvatarUrl(avatarUrl);
                 } catch (IOException e) {
                     response.put("success", false);
                     response.put("message", "Failed to upload avatar: " + e.getMessage());
@@ -300,14 +285,8 @@ public class StudentViewController {
                 }
             }
 
-            // Save updated user
             User updatedUser = userRepository.save(currentUser);
 
-            // Prepare success response
-            response.put("success", true);
-            response.put("message", "Profile updated successfully");
-            
-            // Create user data for response
             Map<String, Object> userData = new HashMap<>();
             userData.put("id", updatedUser.getId());
             userData.put("name", updatedUser.getName());
@@ -321,6 +300,8 @@ public class StudentViewController {
             userData.put("avatarUrl", updatedUser.getAvatarUrl());
             userData.put("role", updatedUser.getRole());
             
+            response.put("success", true);
+            response.put("message", "Profile updated successfully");
             response.put("user", userData);
 
             return ResponseEntity.ok(response);

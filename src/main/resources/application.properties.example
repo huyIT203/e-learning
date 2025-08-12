@@ -60,3 +60,20 @@ spring.servlet.multipart.enabled=true
 # Static Resources
 spring.web.resources.static-locations=classpath:/static/
 spring.web.resources.add-mappings=true
+
+# ========== AWS S3 CONFIG ==========
+# AWS credentials are read from environment variables or IAM role:
+#   AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and optionally AWS_SESSION_TOKEN
+#   Do NOT commit credentials into this file.
+app.s3.bucket=
+app.s3.region=ap-southeast-1
+
+# ========== RDS MYSQL EXAMPLE ==========
+# Example for AWS RDS MySQL endpoint (uncomment and fill in):
+# spring.datasource.url=jdbc:mysql://<rds-endpoint>:3306/<db_name>?useSSL=true&requireSSL=true
+# spring.datasource.username=<db_username>
+# spring.datasource.password=<db_password>
+
+# ========== MONGODB ATLAS EXAMPLE ==========
+# Example MongoDB Atlas connection string (uncomment and fill in):
+# spring.data.mongodb.uri=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/<db_name>?retryWrites=true&w=majority
