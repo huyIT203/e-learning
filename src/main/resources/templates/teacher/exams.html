@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Đề thi - Teacher</title>
+    <!-- Boxicons -->
+    <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- Dark Mode Script -->
+    <script src="/js/darkmode.js"></script>
+    
+    <style>
+        .exams-container {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .exam-card {
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+        
+        .exam-card:hover {
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        
+        .exam-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .exam-type-badge {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .exam-status-badge {
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-draft {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-ended {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .exam-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn-action {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-edit {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-view {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-action:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        
+        .add-exam-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .add-exam-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #6c757d;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: #dee2e6;
+        }
+        
+        .exam-meta {
+            display: flex;
+            gap: 1rem;
+            color: #6c757d;
+            font-size: 14px;
+            margin-top: 0.5rem;
+        }
+        
+        .exam-meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+    </style>
+</head>
+<body>
+    <!-- SIDEBAR -->
+    <div th:replace="~{fragment/sidebar :: sidebar(role=${user.role}, user=${user})}"></div>
+
+    <!-- CONTENT -->
+    <section id="content">
+        <!-- NAVBAR -->
+        <nav th:replace="~{fragment/navbar :: navbar}"></nav>
+
+        <!-- MAIN -->
+        <main>
+            <div class="head-title">
+                <div class="left">
+                    <h1><i class="fas fa-file-alt"></i> Quản lý Đề thi</h1>
+                    <ul class="breadcrumb">
+                        <li><a th:href="@{/teacher/dashboard}">Dashboard</a></li>
+                        <li><i class='bx bx-chevron-right'></i></li>
+                        <li><a class="active" href="#">Đề thi</a></li>
+                    </ul>
+                </div>
+                <button class="add-exam-btn" onclick="showAddExamModal()">
+                    <i class="fas fa-plus"></i> Tạo đề thi mới
+                </button>
+            </div>
+
+            <!-- Statistics Cards -->
+            <ul class="box-info">
+                <li>
+                    <i class='bx bx-file'></i>
+                    <span class="text">
+                        <h3 id="totalExams">0</h3>
+                        <p>Tổng đề thi</p>
+                    </span>
+                </li>
+                <li>
+                    <i class='bx bx-check-circle'></i>
+                    <span class="text">
+                        <h3 id="activeExams">0</h3>
+                        <p>Đang hoạt động</p>
+                    </span>
+                </li>
+                <li>
+                    <i class='bx bx-edit'></i>
+                    <span class="text">
+                        <h3 id="draftExams">0</h3>
+                        <p>Bản nháp</p>
+                    </span>
+                </li>
+                <li>
+                    <i class='bx bx-group'></i>
+                    <span class="text">
+                        <h3 id="totalAttempts">0</h3>
+                        <p>Lượt làm bài</p>
+                    </span>
+                </li>
+            </ul>
+
+            <!-- Exams Container -->
+            <div class="exams-container">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3><i class="fas fa-list"></i> Danh sách đề thi</h3>
+                    <div class="d-flex gap-2">
+                        <select class="form-select" style="width: auto;">
+                            <option>Tất cả loại</option>
+                            <option>Luyện tập</option>
+                            <option>Kiểm tra</option>
+                            <option>Thi cuối kỳ</option>
+                        </select>
+                        <select class="form-select" style="width: auto;">
+                            <option>Tất cả trạng thái</option>
+                            <option>Đang hoạt động</option>
+                            <option>Bản nháp</option>
+                            <option>Đã kết thúc</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Exams List -->
+                <div id="examsList">
+                    <!-- Empty State -->
+                    <div class="empty-state">
+                        <i class="fas fa-file-alt"></i>
+                        <h4>Chưa có đề thi nào</h4>
+                        <p>Tạo đề thi đầu tiên để bắt đầu đánh giá kiến thức học viên.</p>
+                        <button class="add-exam-btn" onclick="showAddExamModal()">
+                            <i class="fas fa-plus"></i> Tạo đề thi đầu tiên
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </section>
+
+    <!-- Scripts -->
+    <script src="/js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('📋 Exams page loaded');
+            loadExams();
+        });
+
+        function showAddExamModal() {
+            alert('🚧 Chức năng tạo đề thi đang được phát triển...');
+        }
+
+        function loadExams() {
+            // TODO: Load exams from API
+            console.log('📋 Loading exams...');
+        }
+    </script>
+</body>
+</html> 

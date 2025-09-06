@@ -1,0 +1,205 @@
+<div th:fragment="sidebar(role, user)" xmlns:th="http://www.w3.org/1999/xhtml">
+    <section id="sidebar">
+        <a href="#" class="brand">
+            <i class='bx bxs-smile'></i>
+            <span class="text">E-learning</span>
+        </a>
+        <p th:text="'XIN CHÀO : ' + ${user != null ? user.name + ' (' + role + ')' : 'Role hiện tại: ' + role}"></p>
+        <ul class="side-menu top">
+            <li data-path="/dashboard">
+                <a th:if="${role.name() == 'ADMIN'}" th:href="@{/admin/dashboard}">
+                    <i class='bx bxs-dashboard'></i>
+                    <span class="text">Dashboard</span>
+                </a>
+                <a th:if="${role.name() == 'TEACHER'}" th:href="@{/teacher/dashboard}">
+                    <i class='bx bxs-dashboard'></i>
+                    <span class="text">Dashboard</span>
+                </a>
+                <a th:if="${role.name() == 'STUDENT'}" th:href="@{/student/dashboard}">
+                    <i class='bx bxs-dashboard'></i>
+                    <span class="text">Dashboard</span>
+                </a>
+            </li>
+
+            <li th:if="${role.name() == 'ADMIN'}" data-path="/courses">
+                <a th:href="@{/admin/courses}">
+                    <i class='bx bxs-book'></i>
+                    <span class="text">Khóa học</span>
+                </a>
+            </li>
+            
+            <li th:if="${role.name() == 'ADMIN'}" data-path="/users">
+                <a th:href="@{/admin/users}">
+                    <i class='bx bxs-group'></i>
+                    <span class="text">Người dùng</span>
+                </a>
+            </li>
+            
+            <li th:if="${role.name() == 'TEACHER'}" data-path="/courses">
+                <a th:href="@{/teacher/courses}">
+                    <i class='bx bxs-book'></i>
+                    <span class="text">Khóa học của tôi</span>
+                </a>
+            </li>
+            
+        
+            
+            
+            
+            <li data-path="/statistics">
+                <a th:if="${role.name() == 'ADMIN'}" th:href="@{/admin/statistics}">
+                    <i class='bx bxs-doughnut-chart'></i>
+                    <span class="text">Thống kê</span>
+                </a>
+                <a th:if="${role.name() == 'TEACHER'}" th:href="@{/teacher/statistics}">
+                    <i class='bx bxs-doughnut-chart'></i>
+                    <span class="text">Thống kê</span>
+                </a>
+                
+            </li>
+            <li data-path="/messages">
+                <a th:if="${role.name() == 'ADMIN'}" th:href="@{/admin/messages}">
+                    <i class='bx bxs-message-dots'></i>
+                    <span class="text">Tin nhắn</span>
+                </a>
+                <a th:if="${role.name() == 'TEACHER'}" th:href="@{/teacher/messages}">
+                    <i class='bx bxs-message-dots'></i>
+                    <span class="text">Tin nhắn</span>
+                </a>
+            </li>
+            <li th:if="${role.name() == 'ADMIN'}" data-path="/profile">
+                <a  th:href="@{/admin/profile}">
+                    <i class='bx bxs-user'></i>
+                    <span class="text">Hồ sơ cá nhân</span>
+                </a>
+            </li>
+
+            <li th:if="${role.name() == 'TEACHER'}" data-path="/profile">
+                <a  th:href="@{/teacher/profile}">
+                    <i class='bx bxs-user'></i>
+                    <span class="text">Hồ sơ cá nhân</span>
+                </a>
+            </li>
+
+            <li th:if="${role.name() == 'ADMIN'}" data-path="/categories">
+                <a th:href="@{/admin/categories}">
+                    <i class='bx bxs-category'></i>
+                    <span class="text">Danh mục</span>
+                </a>
+            </li>
+          
+
+            
+        </ul>
+        <ul class="side-menu">
+            <li>
+                <a href="#" class="logout" onclick="handleLogout()">
+                    <i class='bx bxs-log-out-circle'></i>
+                    <span class="text">Đăng xuất</span>
+                </a>
+            </li>
+        </ul>
+    </section>
+    
+   
+    
+    <script>
+        // Set active menu item based on current URL
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🔧 Sidebar script loaded');
+            
+            const currentPath = window.location.pathname;
+            const menuItems = document.querySelectorAll('#sidebar .side-menu.top li[data-path]');
+            
+            console.log('📍 Current path:', currentPath);
+            console.log('📋 Found menu items:', menuItems.length);
+            
+            // Remove active class from all items
+            menuItems.forEach(item => item.classList.remove('active'));
+            
+            // Add active class to matching item
+            menuItems.forEach(item => {
+                const itemPath = item.getAttribute('data-path');
+                if (currentPath.includes(itemPath)) {
+                    item.classList.add('active');
+                }
+            });
+            
+            // Special case for dashboard (default)
+            if (currentPath.endsWith('/dashboard')) {
+                const dashboardItem = document.querySelector('#sidebar .side-menu.top li[data-path="/dashboard"]');
+                if (dashboardItem) {
+                    dashboardItem.classList.add('active');
+                }
+            }
+            
+            // Handle dropdown menus
+            const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
+            console.log('🔽 Found dropdown toggles:', dropdownToggles.length);
+            
+            dropdownToggles.forEach((toggle, index) => {
+                console.log(`🔽 Setting up dropdown ${index + 1}:`, toggle);
+                
+                toggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    console.log('🔽 Dropdown clicked:', this);
+                    
+                    const dropdownMenu = this.closest('.dropdown-menu');
+                    const wasActive = dropdownMenu.classList.contains('active');
+                    
+                    console.log('🔽 Dropdown menu:', dropdownMenu, 'Was active:', wasActive);
+                    
+                    // Close all other dropdowns
+                    document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                        if (menu !== dropdownMenu) {
+                            menu.classList.remove('active');
+                        }
+                    });
+                    
+                    // Toggle current dropdown
+                    if (wasActive) {
+                        dropdownMenu.classList.remove('active');
+                        console.log('🔽 Dropdown closed');
+                    } else {
+                        dropdownMenu.classList.add('active');
+                        console.log('🔽 Dropdown opened');
+                    }
+                });
+            });
+            
+            // Auto-open dropdown if current page is in it
+            if (currentPath.includes('/questions') || currentPath.includes('/exams')) {
+                const resourcesDropdown = document.querySelector('.dropdown-menu[data-path="/resources"]');
+                if (resourcesDropdown) {
+                    resourcesDropdown.classList.add('active');
+                    console.log('🔽 Auto-opened resources dropdown');
+                    
+                    // Also highlight the specific submenu item
+                    const submenuItems = resourcesDropdown.querySelectorAll('.dropdown-content a');
+                    submenuItems.forEach(item => {
+                        if ((currentPath.includes('/questions') && item.textContent.includes('Câu hỏi')) ||
+                            (currentPath.includes('/exams') && item.textContent.includes('Đề thi'))) {
+                            item.style.background = 'rgba(255, 255, 255, 0.15)';
+                            item.style.color = 'white';
+                        }
+                    });
+                }
+            }
+            
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.dropdown-menu')) {
+                    document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                        menu.classList.remove('active');
+                    });
+                }
+            });
+            
+            console.log('✅ Sidebar initialization complete');
+        });
+    </script>
+</div>
+
+

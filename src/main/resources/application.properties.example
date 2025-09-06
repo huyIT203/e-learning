@@ -1,0 +1,132 @@
+spring.application.name=elearning-backend
+spring.data.mongodb.uri=mongodb://127.0.0.1:27017/elearning
+
+# ========== MYSQL DATABASE CONFIG FOR COMMENTS ==========
+# Flyway Configuration - FIXED
+spring.flyway.enabled=true
+spring.flyway.baseline-on-migrate=true
+spring.flyway.baseline-version=0
+spring.flyway.baseline-description=Initial baseline
+spring.flyway.locations=classpath:db/migration
+spring.flyway.table=flyway_schema_history
+spring.flyway.validate-on-migrate=false
+spring.flyway.clean-disabled=true
+spring.flyway.out-of-order=true
+spring.flyway.mixed=true
+
+# Database Configuration
+#aws
+#spring.datasource.url=jdbc:mysql://mydb.c3e48io2ul8u.ap-southeast-2.rds.amazonaws.com:3306/elearning?useSSL=false&allowPublicKeyRetrieval=true
+#local
+spring.datasource.url=jdbc:mysql://127.0.0.1:3306/elearning
+spring.datasource.username=root
+spring.datasource.password=${DB_PASSWORD:your_database_password}
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+
+# JPA Configuration - CHANGED to update for testing
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
+
+# Migration System Configuration
+migration.enabled=true
+migration.environment=development
+migration.auto-migrate=false
+migration.validate-before-migration=true
+migration.backup-before-migration=true
+migration.retry-count=3
+migration.backup-retention-days=30
+
+# Development Environment
+migration.development.auto-migrate=false
+migration.development.require-approval=false
+migration.development.max-concurrent-migrations=1
+migration.development.backup-before-migration=true
+migration.development.allowed-migration-types=DDL,DML,INDEX,PROCEDURE,TRIGGER,VIEW,DATA_MIGRATION
+
+# Staging Environment
+migration.staging.auto-migrate=false
+migration.staging.require-approval=true
+migration.staging.max-concurrent-migrations=1
+migration.staging.backup-before-migration=true
+migration.staging.allowed-migration-types=DDL,DML,INDEX
+
+# Production Environment
+migration.production.auto-migrate=false
+migration.production.require-approval=true
+migration.production.max-concurrent-migrations=1
+migration.production.backup-before-migration=true
+migration.production.allowed-migration-types=DDL,DML,INDEX
+
+# Migration Paths
+migration.migration-path=classpath:db/migration
+migration.rollback-path=classpath:db/rollback
+
+# Actuator Configuration
+management.endpoints.web.exposure.include=health,info,metrics,migration
+management.endpoint.health.show-details=always
+management.endpoint.migration.enabled=true
+
+# Logging
+logging.level.com.elearning.elearning_backend.migration=DEBUG
+logging.level.org.flyway=INFO
+
+# Cấu hình thêm để đảm bảo ổn định
+spring.datasource.hikari.connection-timeout=20000
+spring.datasource.hikari.maximum-pool-size=10
+spring.jpa.properties.hibernate.jdbc.time_zone=UTC
+spring.jpa.open-in-view=false
+
+server.port=8081
+logging.level.root=INFO
+logging.level.org.springframework=INFO
+logging.level.com.elearning=DEBUG
+spring.http.encoding.charset=UTF-8
+spring.http.encoding.enabled=true
+spring.http.encoding.force=true
+
+jwt.secret=${JWT_SECRET:your_jwt_secret_here}
+jwt.expiration=3600000
+
+spring.web.cors.allowed-origins=*
+spring.web.cors.allowed-methods=*
+
+# ========== SMTP EMAIL CONFIG ==========
+spring.mail.host=smtp.gmail.com
+spring.mail.port=587
+spring.mail.username=your_email@gmail.com
+spring.mail.password=${EMAIL_PASSWORD:your_email_app_password}
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
+spring.mail.properties.mail.smtp.starttls.required=true
+spring.mail.default-encoding=UTF-8
+
+# ========== THYMELEAF CONFIG ==========
+spring.thymeleaf.prefix=classpath:/templates/
+spring.thymeleaf.suffix=.html
+spring.thymeleaf.mode=HTML
+spring.thymeleaf.encoding=UTF-8
+spring.thymeleaf.cache=false
+spring.thymeleaf.servlet.content-type=text/html
+
+# File Upload Configuration
+spring.servlet.multipart.max-file-size=5MB
+spring.servlet.multipart.max-request-size=5MB
+spring.servlet.multipart.enabled=true
+
+# Static Resources
+spring.web.resources.static-locations=classpath:/static/
+spring.web.resources.add-mappings=true
+
+# OpenAI API Configuration for AI Quiz Generation
+openai.api.key=${OPENAI_API_KEY:your_openai_api_key_here}
+openai.api.url=https://api.openai.com/v1/chat/completions
+
+# AWS Credentials
+cloud.aws.region.static=${AWS_REGION:ap-southeast-2}
+cloud.aws.s3.bucket-name=${AWS_S3_BUCKET_NAME:your_s3_bucket_name}
+cloud.aws.credentials.access-key=${AWS_ACCESS_KEY_ID:your_aws_access_key}
+cloud.aws.credentials.secret-key=${AWS_SECRET_ACCESS_KEY:your_aws_secret_key}
+# CloudFront Configuration
+app.aws.cloudfront.domain=${AWS_CLOUDFRONT_DOMAIN:your_cloudfront_domain}

@@ -1,0 +1,27 @@
+<nav th:fragment="navbar" xmlns:th="http://www.w3.org/1999/xhtml">
+        <i class='bx bx-menu' ></i>
+        <a href="/courses" class="nav-link">Categories</a>
+        <form action="#">
+            <div class="form-input">
+                <input type="search" placeholder="Search...">
+                <button type="submit" class="search-btn"><i class='bx bx-search' ></i></button>
+            </div>
+        </form>
+        
+        <!-- Home button -->
+        <a href="/" class="home-btn" title="Về trang chính" style="color: #3C91E6; margin-right: 15px; display: flex; align-items: center; text-decoration: none; font-size: 14px; font-weight: 500;">
+            <i class='bx bx-home' style="font-size: 18px; margin-right: 5px;"></i>
+            <span>Trang chính</span>
+        </a>
+        
+        <input type="checkbox" id="switch-mode" hidden>
+        <label for="switch-mode" class="switch-mode"></label>
+        <a href="#" class="notification" >
+            <i class='bx bxs-bell' ></i>
+            <span class="num" id="notificationCount">0</span>
+        </a>
+        <a class="profile">
+            <img th:src="${user.avatarUrl != null ? user.avatarUrl : 'https://via.placeholder.com/36'}" alt="Profile">
+        </a>
+</nav>
+

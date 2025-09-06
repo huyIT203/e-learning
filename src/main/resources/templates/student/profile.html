@@ -1,0 +1,1952 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Esoclusty</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #7d3cf7;
+            --primary-hover: #5e17eb;
+            --text-dark: #2d3748;
+            --text-muted: #718096;
+            --border-color: #e2e8f0;
+            --danger-color: #ef4444;
+            --background-light: #f8fafc;
+            --secondary-color: #5e17eb;
+            --accent-color: #ffcc00;
+            --text-light: #ffffff;
+            --bg-light: #f8f9fa;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+            padding-top: 80px; /* Account for fixed header */
+        }
+
+        header {
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-weight: 700;
+            font-size: 24px;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .logo i {
+            margin-right: 10px;
+            font-size: 28px;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+
+        .nav-links li {
+            margin-left: 30px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--primary-color);
+        }
+
+        .auth-buttons {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 30px;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            margin-right: 15px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        /* Profile Content Layout */
+        .profile-content-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        /* Profile Wrapper */
+        .profile-wrapper {
+            max-width: 800px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Profile Header */
+        .profile-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .profile-avatar-section {
+            margin-bottom: 20px;
+        }
+
+        .avatar-container {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .avatar-container:hover .avatar-image {
+            transform: scale(1.05);
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .avatar-container:hover .avatar-upload-overlay {
+            background: var(--primary-hover);
+            transform: scale(1.2);
+        }
+
+        .avatar-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .avatar-upload-overlay {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            width: 35px;
+            height: 35px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .avatar-upload-overlay:hover {
+            background: var(--primary-hover);
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .avatar-upload-overlay:active {
+            transform: scale(0.95);
+        }
+
+        /* Avatar loading state */
+        .avatar-loading {
+            position: relative;
+        }
+
+        .avatar-loading::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .avatar-loading::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 30px;
+            height: 30px;
+            margin: -15px 0 0 -15px;
+            border: 3px solid var(--primary-color);
+            border-top: 3px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            z-index: 1;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .profile-info {
+            color: white;
+        }
+
+        .profile-name {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: white;
+        }
+
+        .profile-email {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-bottom: 25px;
+        }
+
+        .edit-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .edit-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .edit-btn i {
+            margin-right: 8px;
+        }
+
+        /* Profile Form Container */
+        .profile-form-container {
+            background: white;
+            padding: 40px 30px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 15px 18px;
+            border: 2px solid #e8ecf0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+            color: var(--text-muted);
+            font-family: 'Poppins', sans-serif;
+            resize: vertical;
+        }
+
+        .form-group input:not([readonly]):not([disabled]):focus,
+        .form-group select:not([disabled]):focus,
+        .form-group textarea:not([readonly]):focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: white;
+            color: var(--text-dark);
+            box-shadow: 0 0 0 3px rgba(125, 60, 247, 0.1);
+        }
+
+        .form-group input[readonly],
+        .form-group select[disabled],
+        .form-group textarea[readonly] {
+            cursor: not-allowed;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+        }
+
+        /* Email Section */
+        .email-section {
+            margin-bottom: 30px;
+        }
+
+        .email-section h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 20px;
+        }
+
+        .email-item {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .email-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .email-icon {
+            width: 45px;
+            height: 45px;
+            background: var(--primary-color);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .email-details {
+            flex: 1;
+        }
+
+        .email-address {
+            display: block;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .email-date {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .add-email-btn {
+            background: transparent;
+            border: 2px dashed var(--border-color);
+            color: var(--text-muted);
+            padding: 15px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .add-email-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            background: rgba(125, 60, 247, 0.05);
+        }
+
+        /* Form Actions */
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .btn-save {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-save:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(125, 60, 247, 0.3);
+        }
+
+        .btn-cancel {
+            background: transparent;
+            color: var(--text-muted);
+            border: 2px solid var(--border-color);
+            padding: 15px 40px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-cancel:hover {
+            border-color: var(--danger-color);
+            color: var(--danger-color);
+            background: rgba(239, 68, 68, 0.05);
+        }
+
+        /* Bio Section */
+        .bio-section {
+            margin-bottom: 40px;
+        }
+
+        /* Learning History Wrapper */
+        .learning-history-wrapper {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            height: fit-content;
+            
+        }
+
+        .learning-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .learning-header h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .learning-header h2 i {
+            color: var(--primary-color);
+            margin-right: 10px;
+        }
+
+        .learning-header p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        /* Learning Stats */
+        .learning-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(125, 60, 247, 0.3);
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .stat-info {
+            flex: 1;
+        }
+
+        .stat-number {
+            display: block;
+            font-size: 24px;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+
+        /* Courses Section */
+        .courses-section h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .courses-list {
+            max-height: 600px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .courses-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .courses-list::-webkit-scrollbar-track {
+            background: var(--bg-light);
+            border-radius: 3px;
+        }
+
+        .courses-list::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 3px;
+        }
+
+        .course-item {
+            background: var(--bg-light);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .course-item:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .course-info {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .course-image {
+            position: relative;
+            width: 80px;
+            height: 60px;
+            border-radius: 10px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .course-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .course-status {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: white;
+        }
+
+        .course-status.in-progress {
+            background: var(--warning-color);
+        }
+
+        .course-status.completed {
+            background: var(--success-color);
+        }
+
+        .course-status.not-started {
+            background: var(--text-muted);
+        }
+
+        .course-details {
+            flex: 1;
+        }
+
+        .course-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .course-instructor {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .course-level {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .level-badge {
+            background: var(--primary-color);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .level-badge.level-beginner {
+            background: #10b981; /* Green */
+        }
+
+        .level-badge.level-intermediate {
+            background: #f59e0b; /* Orange */
+        }
+
+        .level-badge.level-advanced {
+            background: #ef4444; /* Red */
+        }
+
+        .level-badge.level-expert {
+            background: #8b5cf6; /* Purple */
+        }
+
+        .course-progress {
+            margin-bottom: 15px;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--primary-color);
+            min-width: 35px;
+        }
+
+        .course-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .course-score {
+            color: var(--success-color);
+            font-weight: 600;
+        }
+
+        .course-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn-continue,
+        .btn-start,
+        .btn-review,
+        .btn-certificate {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-continue {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .btn-continue:hover {
+            background: #d97706;
+            transform: translateY(-2px);
+        }
+
+        .btn-start {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-start:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn-review {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-review:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .btn-certificate {
+            background: var(--accent-color);
+            color: var(--text-dark);
+        }
+
+        .btn-certificate:hover {
+            background: #eab308;
+            transform: translateY(-2px);
+        }
+
+        /* No Courses State */
+        .no-courses {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .no-courses-content i {
+            font-size: 48px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .no-courses-content h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+        }
+
+        .no-courses-content p {
+            color: var(--text-muted);
+            margin-bottom: 25px;
+        }
+
+        .btn-explore {
+            background: var(--primary-color);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-explore:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(125, 60, 247, 0.3);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .profile-content-wrapper {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .main-container {
+                padding: 20px 15px;
+            }
+
+            .learning-stats {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .stat-card {
+                padding: 15px;
+            }
+
+            .course-info {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .course-image {
+                width: 100%;
+                height: 120px;
+            }
+
+            .course-actions {
+                justify-content: flex-start;
+                flex-wrap: wrap;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .profile-wrapper {
+                margin: 0;
+                border-radius: 15px;
+            }
+
+            .profile-header {
+                padding: 30px 20px;
+            }
+
+            .profile-form-container {
+                padding: 30px 20px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .btn-save,
+            .btn-cancel {
+                width: 100%;
+            }
+
+            .learning-history-wrapper {
+                padding: 20px;
+                border-radius: 15px;
+            }
+
+            .learning-header h2 {
+                font-size: 20px;
+            }
+
+            .stat-card {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+
+            .stat-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
+            }
+
+            .stat-number {
+                font-size: 20px;
+            }
+
+            .course-item {
+                padding: 15px;
+            }
+
+            .course-title {
+                font-size: 14px;
+            }
+
+            .course-instructor {
+                font-size: 12px;
+            }
+
+            .btn-continue,
+            .btn-start,
+            .btn-review,
+            .btn-certificate {
+                padding: 6px 12px;
+                font-size: 11px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-container {
+                padding: 15px 10px;
+            }
+
+            .profile-content-wrapper {
+                gap: 20px;
+            }
+
+            .learning-history-wrapper {
+                padding: 15px;
+            }
+
+            .learning-header h2 {
+                font-size: 18px;
+            }
+
+            .stat-card {
+                padding: 12px;
+            }
+
+            .courses-list {
+                max-height: 400px;
+            }
+
+            .course-item {
+                padding: 12px;
+                margin-bottom: 15px;
+            }
+
+            .course-actions {
+                gap: 8px;
+            }
+
+            .btn-continue,
+            .btn-start,
+            .btn-review,
+            .btn-certificate {
+                padding: 5px 10px;
+                font-size: 10px;
+                min-width: 60px;
+            }
+        }
+
+        /* User Menu Styles */
+        .user-menu {
+            position: relative;
+        }
+
+        .user-avatar-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 15px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(125, 60, 247, 0.1);
+        }
+
+        .user-avatar-section:hover {
+            background: rgba(125, 60, 247, 0.15);
+        }
+
+        .user-avatar-section.active {
+            background: rgba(125, 60, 247, 0.2);
+        }
+
+        .user-avatar img {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary-color);
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 14px;
+        }
+
+        .dropdown-arrow {
+            font-size: 12px;
+            color: var(--text-muted);
+            transition: transform 0.3s ease;
+        }
+
+        .user-avatar-section.active .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        /* User Dropdown */
+        .user-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 280px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            margin-top: 10px;
+        }
+
+        .user-dropdown.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar-large img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary-color);
+        }
+
+        .user-details {
+            flex: 1;
+        }
+
+        .user-name-large {
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .user-email {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .dropdown-menu {
+            padding: 10px 0;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            color: var(--text-dark);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .dropdown-item:hover {
+            background: var(--bg-light);
+            color: var(--primary-color);
+        }
+
+        .dropdown-item i {
+            width: 16px;
+            font-size: 14px;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 8px 0;
+        }
+
+        .logout-item {
+            color: var(--danger-color);
+        }
+
+        .logout-item:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger-color);
+        }
+
+        .breadcrumb {
+            background: white;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .breadcrumb-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .breadcrumb-nav {
+            display: flex;
+            align-items: center;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .breadcrumb-nav a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .breadcrumb-nav span {
+            margin: 0 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <div class="logo">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>Esoclusty</span>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/courses">Courses</a></li>
+                    <li><a href="/student/dashboard">My Learning</a></li>
+                    <li><a href="/student/profile" class="active">Profile</a></li>
+                </ul>
+                <div class="auth-buttons">
+                    <div th:if="${currentUser != null}">
+                        <div class="user-menu">
+                            <div class="user-avatar-section">
+                                <div class="user-avatar">
+                                    <img th:src="${currentUser.avatarUrl != null ? currentUser.avatarUrl : 'https://ui-avatars.com/api/?name=' + currentUser.name + '&background=7d3cf7&color=fff&size=40'}" 
+                                         th:alt="${currentUser.name}">
+                                </div>
+                                <span class="user-name" th:text="${currentUser.name}">User</span>
+                                <i class="fas fa-chevron-down dropdown-arrow"></i>
+                            </div>
+                            
+                            <div class="user-dropdown">
+                                <div class="dropdown-header">
+                                    <div class="user-info">
+                                        <div class="user-avatar-large">
+                                            <img th:src="${currentUser.avatarUrl != null ? currentUser.avatarUrl : 'https://ui-avatars.com/api/?name=' + currentUser.name + '&background=7d3cf7&color=fff&size=60'}" 
+                                                 th:alt="${currentUser.name}">
+                                        </div>
+                                        <div class="user-details">
+                                            <div class="user-name-large" th:text="${currentUser.name}">User Name</div>
+                                            <div class="user-email" th:text="${currentUser.email}">user@example.com</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="dropdown-menu">
+                                    <a th:if="${currentUser.role.name() == 'ADMIN'}" th:href="@{/admin/dashboard}" class="dropdown-item">
+                                        <i class="fas fa-tachometer-alt"></i>
+                                        <span>Dashboard</span>
+                                    </a>
+                                    <a th:if="${currentUser.role.name() == 'TEACHER'}" th:href="@{/teacher/dashboard}" class="dropdown-item">
+                                        <i class="fas fa-tachometer-alt"></i>
+                                        <span>Dashboard</span>
+                                    </a>
+                                    <a th:if="${currentUser.role.name() == 'STUDENT'}" th:href="@{/student/dashboard}" class="dropdown-item">
+                                        <i class="fas fa-tachometer-alt"></i>
+                                        <span>My Learning</span>
+                                    </a>
+                                    <a th:href="@{/student/profile}" class="dropdown-item">
+                                        <i class="fas fa-user"></i>
+                                        <span>Profile</span>
+                                    </a>
+                                    <a href="#" class="dropdown-item">
+                                        <i class="fas fa-cog"></i>
+                                        <span>Settings</span>
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                    <a href="#" onclick="handleLogout()" class="dropdown-item logout-item">
+                                        <i class="fas fa-sign-out-alt"></i>
+                                        <span>Logout</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div th:if="${currentUser == null}">
+                        <a href="/login" class="btn btn-outline">Log In</a>
+                        <a href="/register" class="btn btn-primary">Sign Up</a>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+        <div class="breadcrumb-content">
+            <nav class="breadcrumb-nav">
+                <a href="/">Home</a>
+                <span>></span>
+                <span>Profile</span>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <div class="profile-content-wrapper">
+            <!-- Profile Section -->
+            <div class="profile-wrapper">
+                <!-- Profile Header -->
+                <div class="profile-header">
+                    <div class="profile-avatar-section">
+                        <div class="avatar-container">
+                            <img id="avatarPreview" 
+                                 th:src="${currentUser.avatarUrl != null ? currentUser.avatarUrl : 'https://ui-avatars.com/api/?name=' + currentUser.name + '&background=7d3cf7&color=fff&size=120'}" 
+                                 th:alt="${currentUser.name}"
+                                 class="avatar-image">
+                            <div class="avatar-upload-overlay">
+                                <i class="fas fa-camera"></i>
+                            </div>
+                            <input type="file" id="avatarInput" accept="image/*" style="display: none;">
+                        </div>
+                    </div>
+                    <div class="profile-info">
+                        <h1 class="profile-name" th:text="${currentUser.name}">Alexa Rawles</h1>
+                        <p class="profile-email" th:text="${currentUser.email}">alexarawles@gmail.com</p>
+                        <button class="edit-btn" onclick="toggleEditMode()">
+                            <i class="fas fa-edit"></i>
+                            <span id="editBtnText">Edit</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Profile Form -->
+                <div class="profile-form-container">
+                    <form id="profileForm" onsubmit="updateProfile(event)">
+                        <div class="form-grid">
+                            <!-- Full Name -->
+                            <div class="form-group">
+                                <label for="fullName">Full Name</label>
+                                <input type="text" 
+                                       id="fullName" 
+                                       name="fullName"
+                                       th:value="${currentUser.name}" 
+                                       placeholder="Enter your full name"
+                                       readonly>
+                            </div>
+
+                            <!-- Phone -->
+                            <div class="form-group">
+                                <label for="phone">Phone Number</label>
+                                <input type="tel" 
+                                       id="phone" 
+                                       name="phone"
+                                       th:value="${currentUser.phone != null ? currentUser.phone : ''}" 
+                                       placeholder="Enter your phone number"
+                                       readonly>
+                            </div>
+
+                            <!-- Date of Birth -->
+                            <div class="form-group">
+                                <label for="dob">Date of Birth</label>
+                                <input type="date" 
+                                       id="dob" 
+                                       name="dob"
+                                       th:value="${currentUser.dob != null ? currentUser.dob : ''}" 
+                                       readonly>
+                            </div>
+
+                            <!-- Gender -->
+                            <div class="form-group">
+                                <label for="gender">Gender</label>
+                                <select id="gender" name="gender" disabled>
+                                    <option value="">Select Gender</option>
+                                    <option value="male" th:selected="${currentUser.gender == 'male'}">Male</option>
+                                    <option value="female" th:selected="${currentUser.gender == 'female'}">Female</option>
+                                    <option value="other" th:selected="${currentUser.gender == 'other'}">Other</option>
+                                </select>
+                            </div>
+
+                            <!-- Facebook URL -->
+                            <div class="form-group">
+                                <label for="facebookUrl">Facebook URL</label>
+                                <input type="url" 
+                                       id="facebookUrl" 
+                                       name="facebookUrl"
+                                       th:value="${currentUser.facebookUrl != null ? currentUser.facebookUrl : ''}" 
+                                       placeholder="Enter your Facebook profile URL"
+                                       readonly>
+                            </div>
+
+                            <!-- GitHub URL -->
+                            <div class="form-group">
+                                <label for="githubUrl">GitHub URL</label>
+                                <input type="url" 
+                                       id="githubUrl" 
+                                       name="githubUrl"
+                                       th:value="${currentUser.githubUrl != null ? currentUser.githubUrl : ''}" 
+                                       placeholder="Enter your GitHub profile URL"
+                                       readonly>
+                            </div>
+                        </div>
+
+                        <!-- Bio Section -->
+                        <div class="bio-section">
+                            <div class="form-group">
+                                <label for="bio">Bio</label>
+                                <textarea id="bio" 
+                                          name="bio" 
+                                          rows="4" 
+                                          th:text="${currentUser.bio != null ? currentUser.bio : ''}" 
+                                          placeholder="Tell us about yourself..."
+                                          readonly></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Email Section -->
+                        <div class="email-section">
+                            <h3>My email Address</h3>
+                            <div class="email-item">
+                                <div class="email-info">
+                                    <i class="fas fa-envelope email-icon"></i>
+                                    <div class="email-details">
+                                        <span class="email-address" th:text="${currentUser.email}">alexarawles@gmail.com</span>
+                                        <span class="email-date">1 month ago</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="add-email-btn" id="addEmailBtn" style="display: none;">
+                                <i class="fas fa-plus"></i>
+                                Add Email Address
+                            </button>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="form-actions" id="formActions" style="display: none;">
+                            <button type="submit" class="btn-save">Save Changes</button>
+                            <button type="button" class="btn-cancel" onclick="cancelEdit()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Learning History Section -->
+            <div class="learning-history-wrapper">
+                <div class="learning-header">
+                    <h2><i class="fas fa-graduation-cap"></i> My Learning Journey</h2>
+                    <p>Track your progress and achievements</p>
+                </div>
+
+                <!-- Learning Stats -->
+                <div class="learning-stats" th:if="${profileStats}">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-number" th:text="${profileStats.totalCourses}">0</span>
+                            <span class="stat-label">Total Courses</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-play-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-number" th:text="${profileStats.inProgressCourses}">0</span>
+                            <span class="stat-label">In Progress</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-number" th:text="${profileStats.completedCourses}">0</span>
+                            <span class="stat-label">Completed</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-certificate"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-number" th:text="${profileStats.certificates}">0</span>
+                            <span class="stat-label">Certificates</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Course List -->
+                <div class="courses-section">
+                    <h3>Enrolled Courses</h3>
+                    <div class="courses-list">
+                        <div th:if="${learningHistory != null and !learningHistory.isEmpty()}">
+                            <div class="course-item" th:each="course : ${learningHistory}">
+                                <div class="course-info">
+                                    <div class="course-image">
+                                        <img th:src="${course.image != null and !course.image.isEmpty()} ? ${course.image} : 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=60'" 
+                                             th:alt="${course.title}">
+                                        <div class="course-status" th:classappend="${course['status']}">
+                                            <i class="fas fa-play-circle" th:if="${course['status'] == 'in-progress'}"></i>
+                                            <i class="fas fa-check-circle" th:if="${course['status'] == 'completed'}"></i>
+                                            <i class="fas fa-clock" th:if="${course['status'] == 'not-started'}"></i>
+                                        </div>
+                                    </div>
+                                    <div class="course-details">
+                                        <h4 class="course-title" th:text="${course.title}">Course Title</h4>
+                                        <p class="course-instructor">
+                                            <i class="fas fa-user"></i>
+                                            <span th:text="${course.instructorName}">Instructor Name</span>
+                                        </p>
+                                        <div class="course-level" th:if="${course.level != null}">
+                                            <i class="fas fa-signal"></i>
+                                            <span th:text="${course.level.displayName}" class="level-badge" th:classappend="'level-' + ${course.level.name().toLowerCase()}">Level</span>
+                                        </div>
+                                        <div class="course-progress">
+                                            <div class="progress-bar">
+                                                <div class="progress-fill" th:style="'width: ' + ${course['progress']} + '%'"></div>
+                                            </div>
+                                            <span class="progress-text" th:text="${course['progress']} + '%'">0%</span>
+                                        </div>
+                                        <div class="course-meta">
+                                            <span class="course-date" th:if="${course['status'] == 'completed'}" th:text="'Completed: ' + ${course['completedDate']}"></span>
+                                            <span class="course-date" th:if="${course['status'] == 'in-progress'}" th:text="'Last accessed: ' + ${course['lastAccessed']}"></span>
+                                            <span class="course-date" th:if="${course['status'] == 'not-started'}" th:text="'Enrolled: ' + ${course['enrolledDate']}"></span>
+                                            <span class="course-score" th:if="${course['score'] != null and course['score'] != ''}" th:text="'Score: ' + ${course['score']} + '%'"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="course-actions">
+                                    <a th:href="@{'/course/' + ${course.id} + '/lessons'}" class="btn-continue" th:if="${course['status'] == 'in-progress'}">
+                                        <i class="fas fa-play"></i>
+                                        Continue
+                                    </a>
+                                    <a th:href="@{'/course/' + ${course.id} + '/lessons'}" class="btn-start" th:if="${course['status'] == 'not-started'}">
+                                        <i class="fas fa-play"></i>
+                                        Start
+                                    </a>
+                                    <a th:href="@{'/course/' + ${course.id} + '/lessons'}" class="btn-review" th:if="${course['status'] == 'completed'}">
+                                        <i class="fas fa-eye"></i>
+                                        Review
+                                    </a>
+                                    <button class="btn-certificate" th:if="${course['status'] == 'completed'}">
+                                        <i class="fas fa-certificate"></i>
+                                        Certificate
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div th:if="${learningHistory == null or learningHistory.isEmpty()}" class="no-courses">
+                            <div class="no-courses-content">
+                                <i class="fas fa-book-open"></i>
+                                <h3>No Courses Enrolled Yet</h3>
+                                <p>Start your learning journey by enrolling in courses</p>
+                                <a href="/courses" class="btn-explore">
+                                    <i class="fas fa-search"></i>
+                                    Explore Courses
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isEditMode = false;
+
+        // Toggle edit mode
+        function toggleEditMode() {
+            isEditMode = !isEditMode;
+            const editBtn = document.getElementById('editBtnText');
+            const formActions = document.getElementById('formActions');
+            const addEmailBtn = document.getElementById('addEmailBtn');
+            const inputs = document.querySelectorAll('#profileForm input:not([type="file"]), #profileForm select, #profileForm textarea');
+
+            if (isEditMode) {
+                // Enable edit mode
+                editBtn.textContent = 'Cancel';
+                formActions.style.display = 'flex';
+                addEmailBtn.style.display = 'flex';
+                
+                inputs.forEach(input => {
+                    if (input.id !== 'email') { // Keep email readonly
+                        input.removeAttribute('readonly');
+                        input.removeAttribute('disabled');
+                        input.style.background = 'white';
+                        input.style.color = 'var(--text-dark)';
+                    }
+                });
+            } else {
+                // Disable edit mode
+                editBtn.textContent = 'Edit';
+                formActions.style.display = 'none';
+                addEmailBtn.style.display = 'none';
+                
+                inputs.forEach(input => {
+                    if (input.tagName === 'SELECT') {
+                        input.setAttribute('disabled', 'disabled');
+                    } else if (input.id !== 'email') {
+                        input.setAttribute('readonly', 'readonly');
+                    }
+                    input.style.background = '#f8f9fa';
+                    input.style.color = 'var(--text-muted)';
+                });
+            }
+        }
+
+        // Cancel edit mode
+        function cancelEdit() {
+            // Get current values from the form (these might be updated values from server)
+            const currentValues = {
+                fullName: document.getElementById('fullName').value,
+                phone: document.getElementById('phone').value,
+                dob: document.getElementById('dob').value,
+                gender: document.getElementById('gender').value,
+                facebookUrl: document.getElementById('facebookUrl').value,
+                githubUrl: document.getElementById('githubUrl').value,
+                bio: document.getElementById('bio').value
+            };
+            
+            // Toggle back to view mode first
+            toggleEditMode();
+            
+            // Keep the current values (don't reset to original Thymeleaf values)
+            document.getElementById('fullName').value = currentValues.fullName;
+            document.getElementById('phone').value = currentValues.phone;
+            document.getElementById('dob').value = currentValues.dob;
+            document.getElementById('gender').value = currentValues.gender;
+            document.getElementById('facebookUrl').value = currentValues.facebookUrl;
+            document.getElementById('githubUrl').value = currentValues.githubUrl;
+            document.getElementById('bio').value = currentValues.bio;
+        }
+
+        // Handle avatar upload
+        document.addEventListener('DOMContentLoaded', function() {
+            const avatarUpload = document.querySelector('.avatar-upload-overlay');
+            const avatarImage = document.getElementById('avatarPreview');
+            const avatarInput = document.getElementById('avatarInput');
+            const avatarContainer = document.querySelector('.avatar-container');
+
+            // Click on overlay or avatar image to upload
+            function triggerFileInput() {
+                avatarInput.click();
+            }
+
+            avatarUpload.addEventListener('click', triggerFileInput);
+            avatarImage.addEventListener('click', triggerFileInput);
+
+            avatarInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    // Validate file type
+                    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+                    if (!allowedTypes.includes(file.type)) {
+                        alert('Please select a valid image file (JPEG, PNG, or GIF)');
+                        avatarInput.value = ''; // Clear the input
+                        return;
+                    }
+
+                    // Validate file size (max 5MB)
+                    if (file.size > 5 * 1024 * 1024) {
+                        alert('Please select an image smaller than 5MB');
+                        avatarInput.value = ''; // Clear the input
+                        return;
+                    }
+
+                    // Add loading state
+                    avatarContainer.classList.add('avatar-loading');
+
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const newImageUrl = e.target.result;
+                        
+                        // Update preview immediately
+                        updateAllAvatarImages(newImageUrl);
+                        
+                        // Remove loading state
+                        avatarContainer.classList.remove('avatar-loading');
+                        
+                        // Show preview message
+                        showAvatarUpdateMessage('Avatar preview updated! Click "Save Changes" to confirm.');
+                    };
+                    
+                    reader.onerror = function() {
+                        avatarContainer.classList.remove('avatar-loading');
+                        alert('Error reading the file. Please try again.');
+                        avatarInput.value = ''; // Clear the input
+                    };
+                    
+                    reader.readAsDataURL(file);
+                }
+            });
+        });
+
+        // Function to update all avatar images
+        function updateAllAvatarImages(newImageUrl) {
+            // Update main profile avatar
+            const avatarPreview = document.getElementById('avatarPreview');
+            if (avatarPreview) {
+                avatarPreview.src = newImageUrl;
+            }
+
+            // Update header avatar (small)
+            const headerAvatar = document.querySelector('.user-avatar img');
+            if (headerAvatar) {
+                headerAvatar.src = newImageUrl;
+            }
+
+            // Update dropdown avatar (large)
+            const dropdownAvatar = document.querySelector('.user-avatar-large img');
+            if (dropdownAvatar) {
+                dropdownAvatar.src = newImageUrl;
+            }
+        }
+
+        // Show avatar update message
+        function showAvatarUpdateMessage(message = 'Avatar updated! Remember to save your changes.') {
+            // Create a temporary notification
+            const notification = document.createElement('div');
+            notification.innerHTML = `
+                <div style="
+                    position: fixed;
+                    top: 100px;
+                    right: 20px;
+                    background: var(--success-color);
+                    color: white;
+                    padding: 15px 20px;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                    z-index: 10000;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    font-weight: 500;
+                    animation: slideIn 0.3s ease;
+                ">
+                    <i class="fas fa-check-circle"></i>
+                    ${message}
+                </div>
+            `;
+            
+            // Add animation keyframes
+            if (!document.querySelector('#avatar-notification-style')) {
+                const style = document.createElement('style');
+                style.id = 'avatar-notification-style';
+                style.textContent = `
+                    @keyframes slideIn {
+                        from { transform: translateX(100%); opacity: 0; }
+                        to { transform: translateX(0); opacity: 1; }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+            
+            document.body.appendChild(notification);
+            
+            // Remove notification after 3 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideIn 0.3s ease reverse';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // Update profile function
+        function updateProfile(event) {
+            event.preventDefault();
+            
+            // Show loading state
+            const saveBtn = document.querySelector('.btn-save');
+            const originalText = saveBtn.textContent;
+            saveBtn.textContent = 'Saving...';
+            saveBtn.disabled = true;
+            
+            // Get form data
+            const formData = new FormData();
+            
+            // Add all form fields
+            formData.append('name', document.getElementById('fullName').value);
+            formData.append('phone', document.getElementById('phone').value);
+            formData.append('dob', document.getElementById('dob').value);
+            formData.append('gender', document.getElementById('gender').value);
+            formData.append('facebookUrl', document.getElementById('facebookUrl').value);
+            formData.append('githubUrl', document.getElementById('githubUrl').value);
+            formData.append('bio', document.getElementById('bio').value);
+            
+            // Add avatar file if selected
+            const avatarFile = document.getElementById('avatarInput').files[0];
+            if (avatarFile) {
+                formData.append('avatar', avatarFile);
+            }
+            
+            // Send data to server
+            fetch('/student/profile/update', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    // Update UI with new data
+                    updateUIWithNewData(data.user);
+                    
+                    // Show success message
+                    showSuccessMessage('Profile updated successfully!');
+                    
+                    // Exit edit mode
+                    toggleEditMode();
+                } else {
+                    throw new Error(data.message || 'Failed to update profile');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showErrorMessage('Failed to update profile: ' + error.message);
+            })
+            .finally(() => {
+                // Reset button state
+                saveBtn.textContent = originalText;
+                saveBtn.disabled = false;
+            });
+        }
+
+        // Function to update UI with new data from server
+        function updateUIWithNewData(userData) {
+            // Update profile header
+            document.querySelector('.profile-name').textContent = userData.name;
+            document.querySelector('.profile-email').textContent = userData.email;
+            
+            // Update form fields with server data
+            document.getElementById('fullName').value = userData.name || '';
+            document.getElementById('phone').value = userData.phone || '';
+            document.getElementById('dob').value = userData.dob || '';
+            document.getElementById('gender').value = userData.gender || '';
+            document.getElementById('facebookUrl').value = userData.facebookUrl || '';
+            document.getElementById('githubUrl').value = userData.githubUrl || '';
+            document.getElementById('bio').value = userData.bio || '';
+            
+            // Update avatar if provided
+            if (userData.avatarUrl) {
+                updateAllAvatarImages(userData.avatarUrl);
+            }
+            
+            // Update header user info
+            const userNameElements = document.querySelectorAll('.user-name, .user-name-large');
+            userNameElements.forEach(element => {
+                element.textContent = userData.name;
+            });
+        }
+
+        // Show success message
+        function showSuccessMessage(message) {
+            showNotification(message, 'success');
+        }
+
+        // Show error message
+        function showErrorMessage(message) {
+            showNotification(message, 'error');
+        }
+
+        // Generic notification function
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            const bgColor = type === 'success' ? 'var(--success-color)' : 'var(--danger-color)';
+            const icon = type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
+            
+            notification.innerHTML = `
+                <div style="
+                    position: fixed;
+                    top: 100px;
+                    right: 20px;
+                    background: ${bgColor};
+                    color: white;
+                    padding: 15px 20px;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                    z-index: 10000;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    font-weight: 500;
+                    animation: slideIn 0.3s ease;
+                    max-width: 350px;
+                ">
+                    <i class="${icon}"></i>
+                    ${message}
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Remove notification after 4 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideIn 0.3s ease reverse';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 4000);
+        }
+
+        // User dropdown functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const userAvatarSection = document.querySelector('.user-avatar-section');
+            const userDropdown = document.querySelector('.user-dropdown');
+
+            if (userAvatarSection && userDropdown) {
+                userAvatarSection.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    userAvatarSection.classList.toggle('active');
+                    userDropdown.classList.toggle('show');
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!userAvatarSection.contains(e.target) && !userDropdown.contains(e.target)) {
+                        userAvatarSection.classList.remove('active');
+                        userDropdown.classList.remove('show');
+                    }
+                });
+
+                // Prevent dropdown from closing when clicking inside
+                userDropdown.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+            }
+        });
+
+        // Logout functionality
+        function handleLogout() {
+            if (confirm('Are you sure you want to logout?')) {
+                // Clear any stored data
+                localStorage.removeItem('redirectAfterLogin');
+                localStorage.removeItem('courseReferrer');
+                
+                // Redirect to logout endpoint
+                window.location.href = '/logout';
+            }
+        }
+
+        // Store referrer for course navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            const courseButtons = document.querySelectorAll('.btn-continue, .btn-start, .btn-review');
+            
+            courseButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    // Store current page as referrer for back navigation
+                    localStorage.setItem('courseReferrer', window.location.href);
+                    console.log('Stored courseReferrer from profile:', window.location.href);
+                });
+            });
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hồ Sơ Giảng Viên - E-Learning</title>
+    
+    <!-- Boxicons -->
+    <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Sidebar CSS -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <!-- Dark Mode Script -->
+    <script src="/js/darkmode.js"></script>
+    
+    <style>
+        .profile-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .profile-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 40px;
+            color: white;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .profile-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transform: rotate(45deg);
+        }
+        
+        .profile-info {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .avatar-container {
+            position: relative;
+        }
+        
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            object-fit: cover;
+            transition: all 0.3s ease;
+        }
+        
+        .profile-avatar:hover {
+            transform: scale(1.05);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .avatar-upload {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            width: 40px;
+            height: 40px;
+            background: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .avatar-upload:hover {
+            transform: scale(1.1);
+            background: #f8f9fa;
+        }
+        
+        .profile-details h1 {
+            margin: 0 0 10px 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+        
+        .profile-details .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+        
+        .profile-stats {
+            display: flex;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            display: block;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .profile-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .profile-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .profile-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f8f9fa;
+        }
+        
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+        
+        .card-icon.personal { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .card-icon.contact { background: linear-gradient(135deg, #f093fb, #f5576c); }
+        .card-icon.security { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+        .card-icon.preferences { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+        
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 0;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+        
+        .password-strength {
+            margin-top: 10px;
+        }
+        
+        .strength-bar {
+            height: 4px;
+            background: #e1e5e9;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 5px;
+        }
+        
+        .strength-fill {
+            height: 100%;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+        
+        .strength-text {
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: #667eea;
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            z-index: 1000;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+        }
+        
+        .toast.show {
+            transform: translateX(0);
+        }
+        
+        .toast.success { background: #28a745; }
+        .toast.error { background: #dc3545; }
+        .toast.info { background: #17a2b8; }
+        
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .profile-info {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .profile-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .profile-stats {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- SIDEBAR -->
+    <div th:replace="fragment/sidebar :: sidebar(role=${user.role}, user=${user})"></div>
+
+    <!-- CONTENT -->
+    <section id="content">
+        <!-- NAVBAR -->
+        <nav th:replace="fragment/navbar :: navbar"></nav>
+
+        <!-- MAIN -->
+        <main>
+            <div class="head-title">
+                <div class="left">
+                    <h1>Hồ Sơ Cá Nhân</h1>
+                    <ul class="breadcrumb">
+                        <li><a href="/teacher/dashboard">Dashboard</a></li>
+                        <li><i class='bx bx-chevron-right'></i></li>
+                        <li><a class="active" href="#">Hồ Sơ</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="profile-container">
+                <!-- Profile Header -->
+                <div class="profile-header">
+                    <div class="profile-info">
+                        <div class="avatar-container">
+                            <img th:src="${user.avatarUrl != null ? user.avatarUrl : 'https://via.placeholder.com/150'}" 
+                                 alt="Avatar" class="profile-avatar" id="profileAvatar">
+                            <div class="avatar-upload" onclick="document.getElementById('avatarInput').click()">
+                                <i class="fas fa-camera"></i>
+                            </div>
+                            <input type="file" id="avatarInput" accept="image/*" style="display: none;">
+                        </div>
+                        <div class="profile-details">
+                            <h1 th:text="${user.name}">Giảng Viên</h1>
+                            <p class="subtitle">Giảng Viên</p>
+                            <div class="profile-stats">
+                                <div class="stat-item">
+                                    <span class="stat-number" id="courseCount">0</span>
+                                    <span class="stat-label">Khóa học</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number" id="studentCount">0</span>
+                                    <span class="stat-label">Học viên</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number" id="rating">4.8</span>
+                                    <span class="stat-label">Đánh giá</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Content -->
+                <div class="profile-content">
+                    <!-- Personal Information -->
+                    <div class="profile-card">
+                        <div class="card-header">
+                            <div class="card-icon personal">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <h3 class="card-title">Thông Tin Cá Nhân</h3>
+                        </div>
+                        <form id="personalInfoForm">
+                            <div class="form-group">
+                                <label class="form-label">Họ và Tên</label>
+                                <input type="text" class="form-input" th:value="${user.name}" name="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Ngày Sinh</label>
+                                <input type="date" class="form-input" th:value="${user.dob}" name="dob">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Giới Tính</label>
+                                <select class="form-input" name="gender">
+                                    <option value="">Chọn giới tính</option>
+                                    <option value="male" th:selected="${user.gender == 'male'}">Nam</option>
+                                    <option value="female" th:selected="${user.gender == 'female'}">Nữ</option>
+                                    <option value="other" th:selected="${user.gender == 'other'}">Khác</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Số Điện Thoại</label>
+                                <input type="tel" class="form-input" th:value="${user.phone}" name="phone">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Giới Thiệu Bản Thân</label>
+                                <textarea class="form-input form-textarea" name="bio" th:text="${user.bio}" placeholder="Viết vài dòng về bản thân..."></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Cập Nhật
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Contact Information -->
+                    <div class="profile-card">
+                        <div class="card-header">
+                            <div class="card-icon contact">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <h3 class="card-title">Thông Tin Liên Hệ</h3>
+                        </div>
+                        <form id="contactInfoForm">
+                            <div class="form-group">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-input" th:value="${user.email}" name="email" required readonly>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Facebook</label>
+                                <input type="url" class="form-input" th:value="${user.facebookUrl}" name="facebookUrl" placeholder="https://facebook.com/yourprofile">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">GitHub</label>
+                                <input type="url" class="form-input" th:value="${user.githubUrl}" name="githubUrl" placeholder="https://github.com/yourusername">
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Cập Nhật
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Security Settings -->
+                    <div class="profile-card">
+                        <div class="card-header">
+                            <div class="card-icon security">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <h3 class="card-title">Bảo Mật</h3>
+                        </div>
+                        <form id="securityForm">
+                            <div class="form-group">
+                                <label class="form-label">Mật Khẩu Hiện Tại</label>
+                                <input type="password" class="form-input" name="currentPassword" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Mật Khẩu Mới</label>
+                                <input type="password" class="form-input" name="newPassword" id="newPassword" required>
+                                <div class="password-strength">
+                                    <div class="strength-bar">
+                                        <div class="strength-fill" id="strengthFill"></div>
+                                    </div>
+                                    <div class="strength-text" id="strengthText">Nhập mật khẩu mới</div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Xác Nhận Mật Khẩu</label>
+                                <input type="password" class="form-input" name="confirmPassword" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-key"></i> Đổi Mật Khẩu
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Preferences -->
+                    <div class="profile-card">
+                        <div class="card-header">
+                            <div class="card-icon preferences">
+                                <i class="fas fa-cogs"></i>
+                            </div>
+                            <h3 class="card-title">Tùy Chọn</h3>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Ngôn Ngữ</label>
+                            <select class="form-input" name="language">
+                                <option value="vi">Tiếng Việt</option>
+                                <option value="en">English</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Múi Giờ</label>
+                            <select class="form-input" name="timezone">
+                                <option value="Asia/Ho_Chi_Minh">Việt Nam (GMT+7)</option>
+                                <option value="Asia/Bangkok">Bangkok (GMT+7)</option>
+                                <option value="Asia/Singapore">Singapore (GMT+8)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Thông Báo Email</label>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="emailNotifications" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Thông Báo Push</label>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="pushNotifications" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <button type="button" class="btn btn-primary" onclick="savePreferences()">
+                            <i class="fas fa-save"></i> Lưu Tùy Chọn
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </section>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Scripts -->
+    <script th:src="@{/js/script_teacher.js}"></script>
+    <script th:src="@{/js/script_teacher_profile.js}"></script>
+</body>
+</html> 

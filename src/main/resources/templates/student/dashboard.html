@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Learning - Esoclusty</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #7d3cf7;
+            --primary-hover: #5e17eb;
+            --text-dark: #2d3748;
+            --text-muted: #718096;
+            --border-color: #e2e8f0;
+            --danger-color: #ef4444;
+            --background-light: #f8fafc;
+            --secondary-color: #5e17eb;
+            --accent-color: #ffcc00;
+            --text-light: #ffffff;
+            --bg-light: #f8f9fa;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+            padding-top: 80px; /* Account for fixed header */
+        }
+
+        header {
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-weight: 700;
+            font-size: 24px;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .logo i {
+            margin-right: 10px;
+            font-size: 28px;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+
+        .nav-links li {
+            margin-left: 30px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--primary-color);
+        }
+
+        .auth-buttons {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 30px;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            margin-right: 15px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+
+        /* User Menu Styles */
+        .user-menu {
+            position: relative;
+        }
+
+        .user-avatar-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(125, 60, 247, 0.1);
+        }
+
+        .user-avatar-section:hover {
+            background: rgba(125, 60, 247, 0.15);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid var(--primary-color);
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-name {
+            font-weight: 500;
+            color: var(--text-dark);
+            font-size: 14px;
+        }
+
+        .dropdown-arrow {
+            font-size: 12px;
+            color: var(--text-muted);
+            transition: transform 0.3s ease;
+        }
+
+        .user-avatar-section.active .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        /* Dropdown Menu */
+        .user-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            border: 1px solid var(--border-color);
+            min-width: 280px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            margin-top: 10px;
+        }
+
+        .user-dropdown.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            background: linear-gradient(135deg, rgba(125, 60, 247, 0.05), rgba(94, 23, 235, 0.05));
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar-large {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid var(--primary-color);
+        }
+
+        .user-avatar-large img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-details {
+            flex: 1;
+        }
+
+        .user-name-large {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .user-email {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .dropdown-menu {
+            padding: 10px 0;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            color: var(--text-dark);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(125, 60, 247, 0.05);
+            color: var(--primary-color);
+        }
+
+        .dropdown-item i {
+            width: 16px;
+            font-size: 14px;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 8px 0;
+        }
+
+        .logout-item:hover {
+            background: rgba(239, 68, 68, 0.05);
+            color: var(--danger-color);
+        }
+
+        /* Breadcrumb */
+        .breadcrumb {
+            background: white;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .breadcrumb-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .breadcrumb-nav {
+            display: flex;
+            align-items: center;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .breadcrumb-nav a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .breadcrumb-nav span {
+            margin: 0 10px;
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .page-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .page-title i {
+            font-size: 32px;
+            color: var(--primary-color);
+        }
+
+        .page-title h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin: 0;
+        }
+
+        .filter-tabs {
+            display: flex;
+            background: white;
+            border-radius: 8px;
+            padding: 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .filter-tab {
+            padding: 8px 16px;
+            border: none;
+            background: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            color: var(--text-muted);
+        }
+
+        .filter-tab.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .filter-tab:hover:not(.active) {
+            background: rgba(125, 60, 247, 0.1);
+            color: var(--primary-color);
+        }
+
+        /* Learning Stats */
+        .learning-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 20px;
+            color: white;
+        }
+
+        .stat-icon.enrolled {
+            background: var(--primary-color);
+        }
+
+        .stat-icon.completed {
+            background: var(--success-color);
+        }
+
+        .stat-icon.in-progress {
+            background: var(--warning-color);
+        }
+
+        .stat-icon.certificates {
+            background: var(--accent-color);
+            color: var(--text-dark);
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        /* Course Grid */
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+        }
+
+        .course-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .course-image {
+            position: relative;
+            height: 160px;
+            overflow: hidden;
+        }
+
+        .course-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .course-card:hover .course-image img {
+            transform: scale(1.05);
+        }
+
+        .course-level {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .course-level.beginner {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .course-level.intermediate {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .course-level.advanced {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .course-progress-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .course-progress-bar {
+            height: 100%;
+            background: var(--success-color);
+            transition: width 0.3s ease;
+        }
+
+        .course-content {
+            padding: 20px;
+        }
+
+        .course-category {
+            color: var(--primary-color);
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .course-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+            line-height: 1.4;
+        }
+
+        .course-instructor {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .course-progress-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .progress-text {
+            color: var(--text-muted);
+        }
+
+        .progress-percentage {
+            font-weight: 600;
+            color: var(--success-color);
+        }
+
+        .course-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .continue-btn {
+            flex: 1;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .continue-btn:hover {
+            background: var(--secondary-color);
+        }
+
+        .course-menu-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .course-menu-btn:hover {
+            background: var(--bg-light);
+            color: var(--text-dark);
+        }
+
+        .no-courses {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--text-muted);
+        }
+
+        .no-courses i {
+            font-size: 64px;
+            margin-bottom: 20px;
+            color: var(--border-color);
+        }
+
+        .no-courses h3 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: var(--text-dark);
+        }
+
+        .no-courses p {
+            font-size: 16px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 20px 15px;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .learning-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .courses-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-tabs {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <div class="logo">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>Esoclusty</span>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/courses">Courses</a></li>
+                    <li><a href="/student/dashboard" class="active">My Learning</a></li>
+                </ul>
+                <div class="auth-buttons">
+                    <div th:if="${currentUser != null}">
+                        <div class="user-menu">
+                            <div class="user-avatar-section">
+                                <div class="user-avatar">
+                                    <img th:src="${currentUser.avatarUrl != null ? currentUser.avatarUrl : 'https://ui-avatars.com/api/?name=' + currentUser.name + '&background=7d3cf7&color=fff&size=40'}" 
+                                         th:alt="${currentUser.name}">
+                                </div>
+                                <span class="user-name" th:text="${currentUser.name}">User</span>
+                                <i class="fas fa-chevron-down dropdown-arrow"></i>
+                            </div>
+                            
+                            <div class="user-dropdown">
+                                <div class="dropdown-header">
+                                    <div class="user-info">
+                                        <div class="user-avatar-large">
+                                            <img th:src="${currentUser.avatarUrl != null ? currentUser.avatarUrl : 'https://ui-avatars.com/api/?name=' + currentUser.name + '&background=7d3cf7&color=fff&size=60'}" 
+                                                 th:alt="${currentUser.name}">
+                                        </div>
+                                        <div class="user-details">
+                                            <div class="user-name-large" th:text="${currentUser.name}">User Name</div>
+                                            <div class="user-email" th:text="${currentUser.email}">user@example.com</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="dropdown-menu">
+                                    <a th:if="${currentUser.role.name() == 'ADMIN'}" th:href="@{/admin/dashboard}" class="dropdown-item">
+                                        <i class="fas fa-tachometer-alt"></i>
+                                        <span>Dashboard</span>
+                                    </a>
+                                    <a th:if="${currentUser.role.name() == 'TEACHER'}" th:href="@{/teacher/dashboard}" class="dropdown-item">
+                                        <i class="fas fa-tachometer-alt"></i>
+                                        <span>Dashboard</span>
+                                    </a>
+                                    <a th:if="${currentUser.role.name() == 'STUDENT'}" th:href="@{/student/dashboard}" class="dropdown-item">
+                                        <i class="fas fa-tachometer-alt"></i>
+                                        <span>My Learning</span>
+                                    </a>
+                                    <a th:href="@{/student/profile}" class="dropdown-item">
+                                        <i class="fas fa-user"></i>
+                                        <span>Profile</span>
+                                    </a>
+                                    <a href="#" class="dropdown-item">
+                                        <i class="fas fa-cog"></i>
+                                        <span>Settings</span>
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                    <a href="#" onclick="handleLogout()" class="dropdown-item logout-item">
+                                        <i class="fas fa-sign-out-alt"></i>
+                                        <span>Logout</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div th:if="${currentUser == null}">
+                        <a href="/login" class="btn btn-outline">Log In</a>
+                        <a href="/register" class="btn btn-primary">Sign Up</a>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+        <div class="breadcrumb-content">
+            <nav class="breadcrumb-nav">
+                <a href="/">Home</a>
+                <span>></span>
+                <span>My Learning</span>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="page-title">
+                <i class="fas fa-book-open"></i>
+                <h1>My Learning</h1>
+            </div>
+            <div class="filter-tabs">
+                <button class="filter-tab active" onclick="filterCourses('all')">All</button>
+                <button class="filter-tab" onclick="filterCourses('in-progress')">In-Progress</button>
+                <button class="filter-tab" onclick="filterCourses('completed')">Completed</button>
+            </div>
+        </div>
+
+        <!-- Learning Stats -->
+        <div class="learning-stats">
+            <div class="stat-card">
+                <div class="stat-icon enrolled">
+                    <i class="fas fa-book"></i>
+                </div>
+                <div class="stat-number" th:text="${learningStats.totalEnrolled}">4</div>
+                <div class="stat-label">Enrolled Courses</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon in-progress">
+                    <i class="fas fa-play-circle"></i>
+                </div>
+                <div class="stat-number" th:text="${learningStats.inProgress}">3</div>
+                <div class="stat-label">In Progress</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon completed">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-number" th:text="${learningStats.completed}">1</div>
+                <div class="stat-label">Completed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon certificates">
+                    <i class="fas fa-certificate"></i>
+                </div>
+                <div class="stat-number" th:text="${learningStats.certificates}">1</div>
+                <div class="stat-label">Certificates</div>
+            </div>
+        </div>
+
+        <!-- Enrolled Courses Grid -->
+        <div class="courses-grid" id="coursesGrid">
+            <!-- Dynamic enrolled courses from backend -->
+            <div th:each="course : ${enrolledCourses}" 
+                 class="course-card" 
+                 th:data-status="${course.status}">
+                <div class="course-image">
+                    <img th:src="${course.imageUrl}" th:alt="${course.title}">
+                    <div class="course-level" 
+                         th:class="'course-level ' + ${course.level.toLowerCase()}"
+                         th:text="${course.level}">Beginner</div>
+                    <div class="course-progress-overlay">
+                        <div class="course-progress-bar" 
+                             th:style="'width: ' + ${course.progress} + '%'"></div>
+                    </div>
+                </div>
+                <div class="course-content">
+                    <div class="course-category" th:if="${course.skillCategory != null or course.jobRole != null}">
+                        <span th:if="${course.skillCategory != null}" th:text="${course.skillCategory}">Skill</span>
+                        <span th:if="${course.skillCategory != null and course.jobRole != null}"> | </span>
+                        <span th:if="${course.jobRole != null}" th:text="${course.jobRole}">Role</span>
+                        <span> | Self-paced</span>
+                    </div>
+                    <div class="course-category" th:if="${course.skillCategory == null and course.jobRole == null}">
+                        General | Self-paced
+                    </div>
+                    <h3 class="course-title" th:text="${course.title}">Course Title</h3>
+                    <p class="course-instructor" th:text="${course.title}">Course Instructor</p>
+                    <div class="course-progress-info">
+                        <span class="progress-text" 
+                              th:text="${course.status == 'completed' ? 'Completed' : 'Progress'}">Progress</span>
+                        <span class="progress-percentage" 
+                              th:text="${course.progress} + '%'">0%</span>
+                    </div>
+                    <div class="course-actions">
+                        <button class="continue-btn" 
+                                th:if="${course.status != 'completed'}"
+                                th:data-course-id="${course.id}"
+                                onclick="continueCourse(this.dataset.courseId)"
+                                >Continue Learning</button>
+                        <button class="continue-btn" 
+                                th:if="${course.status == 'completed'}"
+                                style="background: var(--success-color);" 
+                                th:data-course-id="${course.id}"
+                                onclick="viewCertificate(this.dataset.courseId)">
+                            <i class="fas fa-certificate"></i> View Certificate
+                        </button>
+                        <button class="course-menu-btn">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- No Courses Message (shown when no courses match filter) -->
+        <div class="no-courses" id="noCourses" style="display: none;">
+            <i class="fas fa-book-open"></i>
+            <h3>No courses found</h3>
+            <p>You haven't enrolled in any courses yet. Start your learning journey today!</p>
+            <a href="/courses" class="btn btn-primary">Browse Courses</a>
+        </div>
+    </div>
+
+    <script>
+        // Filter courses functionality
+        function filterCourses(status) {
+            const tabs = document.querySelectorAll('.filter-tab');
+            const courses = document.querySelectorAll('.course-card');
+            
+            // Update active tab
+            tabs.forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Filter courses
+            let visibleCount = 0;
+            courses.forEach(course => {
+                const courseStatus = course.dataset.status;
+                if (status === 'all' || courseStatus === status) {
+                    course.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    course.style.display = 'none';
+                }
+            });
+            
+            // Show/hide no courses message
+            const noCourses = document.getElementById('noCourses');
+            if (visibleCount === 0) {
+                noCourses.style.display = 'block';
+            } else {
+                noCourses.style.display = 'none';
+            }
+        }
+
+        // Continue course function
+        function continueCourse(courseId) {
+            // Store current page as referrer for back navigation
+            localStorage.setItem('courseReferrer', window.location.href);
+            window.location.href = `/course/${courseId}/lessons`;
+        }
+
+        // View certificate function
+        function viewCertificate(courseId) {
+            window.location.href = `/course/${courseId}/certificate`;
+        }
+
+        // User dropdown functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const userAvatarSection = document.querySelector('.user-avatar-section');
+            const userDropdown = document.querySelector('.user-dropdown');
+
+            if (userAvatarSection && userDropdown) {
+                userAvatarSection.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    userAvatarSection.classList.toggle('active');
+                    userDropdown.classList.toggle('show');
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!userAvatarSection.contains(e.target) && !userDropdown.contains(e.target)) {
+                        userAvatarSection.classList.remove('active');
+                        userDropdown.classList.remove('show');
+                    }
+                });
+
+                // Prevent dropdown from closing when clicking inside
+                userDropdown.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+            }
+        });
+
+        // Logout functionality
+        function handleLogout() {
+            if (confirm('Are you sure you want to logout?')) {
+                // Clear any stored data
+                localStorage.removeItem('redirectAfterLogin');
+                localStorage.removeItem('courseReferrer');
+                
+                // Redirect to logout endpoint
+                window.location.href = '/logout';
+            }
+        }
+
+        function toggleUserMenu() {
+            const userAvatarSection = document.querySelector('.user-avatar-section');
+            const userDropdown = document.querySelector('.user-dropdown');
+            
+            userAvatarSection.classList.toggle('active');
+            userDropdown.classList.toggle('show');
+        }
+    </script>
+    
+    <!-- User data for chat functionality -->
+    <div th:if="${session.user != null}" 
+         th:data-user-id="${session.user.id}" 
+         th:data-user-name="${session.user.name}" 
+         th:data-user-role="${session.user.role.name()}"
+         id="userData" 
+         style="display: none;"></div>
+    
+    <!-- Include floating chat button (only for students) -->
+    <div th:if="${session.user != null and session.user.role.name() == 'STUDENT'}" 
+         th:replace="fragment/floating-chat :: floating-chat"></div>
+</body>
+</html> 

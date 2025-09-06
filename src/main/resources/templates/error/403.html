@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>403 Forbidden - E-Learning Platform</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <style>
+        .error-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .error-code {
+            font-size: 120px;
+            font-weight: bold;
+            color: #e74c3c;
+            margin: 0;
+            line-height: 1;
+        }
+        
+        .error-title {
+            font-size: 32px;
+            color: #2c3e50;
+            margin: 20px 0 10px 0;
+        }
+        
+        .error-message {
+            font-size: 18px;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            max-width: 600px;
+        }
+        
+        .error-actions {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-secondary {
+            background-color: #95a5a6;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+        }
+        
+        .error-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-icon">🚫</div>
+        <h1 class="error-code">403</h1>
+        <h2 class="error-title">Truy Cập Bị Từ Chối</h2>
+        <p class="error-message">
+            Bạn không có quyền truy cập vào tài nguyên này. 
+            Vui lòng kiểm tra quyền truy cập của bạn hoặc liên hệ với quản trị viên.
+        </p>
+        
+        <div class="error-actions">
+            <a href="javascript:history.back()" class="btn btn-secondary">← Quay Lại</a>
+            <a th:href="@{/}" class="btn btn-primary">🏠 Về Trang Chủ</a>
+        </div>
+    </div>
+</body>
+</html> 

@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Boxicons -->
+    <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- Layout Fix CSS -->
+    <link rel="stylesheet" href="/css/layout-fix.css">
+    <!-- Dark Mode Script -->
+    <script src="/js/darkmode.js"></script>
+
+    <title>Teacher Dashboard</title>
+    
+    <style>
+        /* Home button styling */
+        .home-btn:hover {
+            color: #2980b9 !important;
+            transform: translateY(-1px);
+            transition: all 0.2s ease;
+        }
+        
+        @media (max-width: 768px) {
+            .home-btn span {
+                display: none;
+            }
+            .home-btn {
+                margin-right: 10px !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+
+<!-- SIDEBAR -->
+<div th:replace="~{fragment/sidebar :: sidebar(role=${user.role}, user=${user})}"></div>
+<!-- SIDEBAR -->
+
+
+
+<!-- CONTENT -->
+<section id="content">
+    <!-- NAVBAR -->
+    <nav th:replace="~{fragment/navbar :: navbar}">
+    </nav>
+    <!-- NAVBAR -->
+
+    <!-- MAIN -->
+    <main>
+        <div class="head-title">
+            <div class="left">
+                <h1>Teacher Dashboard</h1>
+                <ul class="breadcrumb">
+                    <li>
+                        <a href="#">Dashboard</a>
+                    </li>
+                    <li><i class='bx bx-chevron-right' ></i></li>
+                    <li>
+                        <a class="active" href="#">Home</a>
+                    </li>
+                </ul>
+            </div>
+            <a href="#" class="btn-download">
+                <i class='bx bxs-cloud-download' ></i>
+                <span class="text">Export Data</span>
+            </a>
+        </div>
+
+        <ul class="box-info">
+            <li>
+                <i class='bx bxs-book' ></i>
+                <span class="text">
+                    <h3 id="totalCourses">0</h3>
+                    <p>Khóa học của tôi</p>
+					</span>
+            </li>
+            <li>
+                <i class='bx bxs-group' ></i>
+                <span class="text">
+                    <h3 id="totalStudents">0</h3>
+                    <p>Học viên</p>
+                </span>
+            </li>
+            <li>
+                <i class='bx bxs-star' ></i>
+                <span class="text">
+                    <h3 id="averageRating">0</h3>
+                    <p>Đánh giá TB</p>
+					</span>
+            </li>
+            <li>
+                <i class='bx bxs-trophy' ></i>
+                <span class="text">
+                    <h3 id="completionRate">0%</h3>
+                    <p>Tỷ lệ hoàn thành</p>
+					</span>
+            </li>
+        </ul>
+
+
+        <div class="table-data">
+            <div class="order">
+                <div class="head">
+                    <h3>Danh sách các khóa học</h3>
+                    <i class='bx bx-search' ></i>
+                    <i class='bx bx-filter' ></i>
+                </div>
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Khóa học</th>
+                        <th>Cấp độ</th>
+                        <th>Học viên</th>
+                        <th>Bài học</th>
+                        <th>Trạng thái</th>
+                    </tr>
+                    </thead>
+                    <tbody id="coursesTableBody">
+                        <!-- Courses will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="todo">
+                <div class="head">
+                    <h3>Thông báo từ Admin</h3>
+                    <i class='bx bx-bell' ></i>
+                    <i class='bx bx-filter' ></i>
+                </div>
+                <ul class="todo-list" id="notificationsList">
+                    <li class="not-completed">
+                        <p>Đang tải thông báo...</p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </main>
+    <!-- MAIN -->
+</section>
+<!-- CONTENT -->
+
+<!-- Notification Detail Modal -->
+<div id="notificationDetailModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
+    <div style="background-color: #fefefe; margin: 5% auto; padding: 20px; border: none; border-radius: 8px; width: 80%; max-width: 600px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="margin: 0; color: #333;">Chi tiết thông báo</h2>
+            <span onclick="closeNotificationModal()" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+        </div>
+        
+        <div id="notificationDetailContent">
+            <!-- Content will be loaded here -->
+        </div>
+        
+        <div style="margin-top: 20px; text-align: right;">
+            <button onclick="closeNotificationModal()" style="background: #95a5a6; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
+                Đóng
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+// Initialize when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    loadStats();
+    loadCourses();
+    loadNotifications();
+});
+
+function loadStats() {
+    fetch('/teacher/api/stats')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('totalCourses').textContent = data.totalCourses || 0;
+                document.getElementById('totalStudents').textContent = data.totalStudents || 0;
+                document.getElementById('averageRating').textContent = (data.averageRating || 0).toFixed(1);
+                document.getElementById('completionRate').textContent = (data.completionRate || 0) + '%';
+            }
+        })
+        .catch(error => {
+            console.error('Error loading stats:', error);
+        });
+}
+
+function loadCourses() {
+    fetch('/teacher/api/courses')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const tbody = document.getElementById('coursesTableBody');
+                tbody.innerHTML = '';
+                
+                if (data.courses.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Chưa có khóa học nào</td></tr>';
+                    return;
+                }
+                
+                data.courses.slice(0, 10).forEach(course => {
+                    const row = document.createElement('tr');
+                    
+                    // Get level text
+                    const levelText = {
+                        'BEGINNER': 'Cơ bản',
+                        'INTERMEDIATE': 'Trung bình',
+                        'ADVANCED': 'Nâng cao'
+                    }[course.level] || course.level;
+                    
+                    // Get status text and class
+                    const statusInfo = {
+                        'DRAFT': { text: 'Nháp', class: 'pending' },
+                        'PUBLISHED': { text: 'Đã xuất bản', class: 'completed' },
+                        'ARCHIVED': { text: 'Lưu trữ', class: 'process' }
+                    }[course.status] || { text: course.status, class: 'pending' };
+                    
+                    row.innerHTML = `
+                        <td>
+                            <img src="${course.image || 'https://via.placeholder.com/32'}" style="width: 32px; height: 32px; border-radius: 4px; object-fit: cover;">
+                            <div style="display: inline-block; margin-left: 10px; vertical-align: top;">
+                                <p style="margin: 0; font-weight: 600;">${course.title}</p>
+                                <small style="color: #666;">${course.description ? course.description.substring(0, 50) + '...' : 'Không có mô tả'}</small>
+                            </div>
+                        </td>
+                        <td><span class="status ${statusInfo.class}">${levelText}</span></td>
+                        <td><strong>${course.enrolledCount || 0}</strong> học viên</td>
+                        <td><strong>${course.lessonCount || 0}</strong> bài học</td>
+                        <td><span class="status ${statusInfo.class}">${statusInfo.text}</span></td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error loading courses:', error);
+            const tbody = document.getElementById('coursesTableBody');
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: red;">Lỗi khi tải danh sách khóa học</td></tr>';
+        });
+}
+
+function loadNotifications() {
+    fetch('/teacher/api/notifications')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const notificationsList = document.getElementById('notificationsList');
+                const notificationCount = document.getElementById('notificationCount');
+                
+                notificationsList.innerHTML = '';
+                notificationCount.textContent = data.unreadCount || 0;
+                
+                if (data.notifications.length === 0) {
+                    notificationsList.innerHTML = '<li class="not-completed"><p>Chưa có thông báo nào</p></li>';
+                    return;
+                }
+                
+                data.notifications.slice(0, 5).forEach(notification => {
+                    const li = document.createElement('li');
+                    li.className = notification.read ? 'completed' : 'not-completed';
+                    
+                    const priorityIcons = {
+                        'HIGH': '🔴',
+                        'MEDIUM': '🟡',
+                        'LOW': '🟢'
+                    };
+                    
+                    const typeIcons = {
+                        'ANNOUNCEMENT': '📢',
+                        'REMINDER': '⏰',
+                        'WARNING': '⚠️'
+                    };
+                    
+                    li.innerHTML = `
+                        <div onclick="markAsRead('${notification.id}')" style="cursor: pointer; flex: 1;">
+                            <p><strong>${priorityIcons[notification.priority] || '🟡'} ${typeIcons[notification.type] || '📢'} ${notification.title}</strong></p>
+                            <p style="font-size: 12px; color: #666;">${notification.message}</p>
+                            <p style="font-size: 10px; color: #999;">${new Date(notification.createdAt).toLocaleString('vi-VN')}</p>
+                        </div>
+                        <div style="display: flex; gap: 5px;">
+                            <i class='bx bx-show' onclick="viewNotificationDetail('${notification.id}')" style="cursor: pointer; color: #3498db;" title="Xem chi tiết"></i>
+                            <i class='bx bx-dots-vertical-rounded'></i>
+                        </div>
+                    `;
+                    li.style.display = 'flex';
+                    li.style.alignItems = 'flex-start';
+                    li.style.justifyContent = 'space-between';
+                    notificationsList.appendChild(li);
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error loading notifications:', error);
+        });
+}
+
+function markAsRead(notificationId) {
+    fetch(`/teacher/api/notifications/${notificationId}/read`, {
+        method: 'POST'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            loadNotifications(); // Reload notifications
+        }
+    })
+    .catch(error => {
+        console.error('Error marking notification as read:', error);
+    });
+}
+
+function viewNotificationDetail(notificationId) {
+    fetch(`/teacher/api/notifications/${notificationId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const notification = data.notification;
+                
+                const priorityLabels = {
+                    'HIGH': 'Quan trọng',
+                    'MEDIUM': 'Bình thường',
+                    'LOW': 'Thấp'
+                };
+                
+                const typeLabels = {
+                    'ANNOUNCEMENT': 'Thông báo',
+                    'REMINDER': 'Nhắc nhở',
+                    'WARNING': 'Cảnh báo'
+                };
+                
+                const targetText = notification.toUserId ? 'Cá nhân' : 'Tất cả giảng viên';
+                
+                // Format file size function
+                function formatFileSize(bytes) {
+                    if (!bytes) return '0 B';
+                    if (bytes < 1024) return bytes + ' B';
+                    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+                    if (bytes < 1024 * 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+                    return (bytes / (1024 * 1024 * 1024)).toFixed(1) + ' GB';
+                }
+                
+                let attachmentsHtml = '';
+                if (notification.attachmentUrls && notification.attachmentUrls.length > 0) {
+                    attachmentsHtml = `
+                        <div style="margin-bottom: 15px;">
+                            <strong>Tệp đính kèm:</strong><br>
+                            <div style="background: #f8f9fa; padding: 10px; border-radius: 4px; margin-top: 5px;">
+                                ${notification.attachmentUrls.map((url, index) => `
+                                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid #eee;">
+                                        <span style="flex: 1;">
+                                            <i class="fas fa-file"></i> ${notification.attachmentNames[index] || 'Tệp đính kèm'}
+                                            <small style="color: #666; margin-left: 10px;">(${formatFileSize(notification.attachmentSizes[index] || 0)})</small>
+                                        </span>
+                                        <a href="/teacher/api/notifications/${notification.id}/download/${index}" 
+                                           style="color: #3498db; text-decoration: none; padding: 2px 8px; border: 1px solid #3498db; border-radius: 3px; font-size: 12px;"
+                                           target="_blank">Tải xuống</a>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                document.getElementById('notificationDetailContent').innerHTML = `
+                    <div style="margin-bottom: 15px;">
+                        <strong>Tiêu đề:</strong> ${notification.title}
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <strong>Nội dung:</strong><br>
+                        <div style="background: #f8f9fa; padding: 10px; border-radius: 4px; margin-top: 5px;">
+                            ${notification.message}
+                        </div>
+                    </div>
+                    ${attachmentsHtml}
+                    <div style="margin-bottom: 15px;">
+                        <strong>Gửi đến:</strong> ${targetText}
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <strong>Mức độ ưu tiên:</strong> ${priorityLabels[notification.priority] || notification.priority}
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <strong>Loại:</strong> ${typeLabels[notification.type] || notification.type}
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <strong>Ngày tạo:</strong> ${new Date(notification.createdAt).toLocaleString('vi-VN')}
+                    </div>
+                    ${notification.updatedAt ? `<div style="margin-bottom: 15px;">
+                        <strong>Cập nhật lần cuối:</strong> ${new Date(notification.updatedAt).toLocaleString('vi-VN')}
+                    </div>` : ''}
+                    <div style="margin-bottom: 15px;">
+                        <strong>Trạng thái:</strong> ${notification.read ? 'Đã đọc' : 'Chưa đọc'}
+                    </div>
+                `;
+                
+                document.getElementById('notificationDetailModal').style.display = 'block';
+            } else {
+                alert('Lỗi: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error loading notification detail:', error);
+            alert('Có lỗi xảy ra khi tải chi tiết thông báo');
+        });
+}
+
+function closeNotificationModal() {
+    document.getElementById('notificationDetailModal').style.display = 'none';
+}
+
+// Sidebar active
+document.addEventListener('DOMContentLoaded', function () {
+	const currentPath = window.location.pathname;
+	const allSideLinks = document.querySelectorAll('#sidebar .side-menu li a');
+
+	allSideLinks.forEach(link => {
+		const href = link.getAttribute('href');
+		if (currentPath === href || currentPath.startsWith(href)) {
+			link.parentElement.classList.add('active');
+		} else {
+			link.parentElement.classList.remove('active');
+		}
+	});
+});
+
+// Toggle sidebar
+const menuBar = document.querySelector('#content nav .bx.bx-menu');
+const sidebar = document.getElementById('sidebar');
+if (menuBar && sidebar) {
+    menuBar.addEventListener('click', () => sidebar.classList.toggle('hide'));
+}
+
+// Search responsive
+const searchButton = document.querySelector('#content nav form .form-input button');
+const searchButtonIcon = document.querySelector('#content nav form .form-input button .bx');
+const searchForm = document.querySelector('#content nav form');
+
+if (searchButton && searchButtonIcon && searchForm) {
+    searchButton.addEventListener('click', function (e) {
+        if (window.innerWidth < 576) {
+            e.preventDefault();
+            searchForm.classList.toggle('show');
+            searchButtonIcon.classList.toggle('bx-search');
+            searchButtonIcon.classList.toggle('bx-x');
+        }
+    });
+}
+
+if (window.innerWidth < 768) {
+    if (sidebar) sidebar.classList.add('hide');
+} else if (window.innerWidth > 576) {
+    if (searchButtonIcon) searchButtonIcon.classList.replace('bx-x', 'bx-search');
+    if (searchForm) searchForm.classList.remove('show');
+}
+
+window.addEventListener('resize', function () {
+    if (this.innerWidth > 576) {
+        if (searchButtonIcon) searchButtonIcon.classList.replace('bx-x', 'bx-search');
+        if (searchForm) searchForm.classList.remove('show');
+    }
+});
+
+// Logout
+function handleLogout() {
+    fetch('/api/auth/logout', { method: 'POST' }).finally(() => window.location.href = "/");
+}
+</script>
+</body>
+</html>
