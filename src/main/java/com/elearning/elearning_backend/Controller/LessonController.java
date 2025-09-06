@@ -44,7 +44,7 @@ public class LessonController {
                 return userRepository.findByEmail(email).orElse(null);
             }
         } catch (Exception e) {
-            System.out.println("❌ Error getting current user: " + e.getMessage());
+            System.out.println("Error getting current user: " + e.getMessage());
         }
         return null;
     }
@@ -64,7 +64,7 @@ public class LessonController {
             
             // Validate required fields
             if (lesson.getTitle() == null || lesson.getTitle().trim().isEmpty()) {
-                System.err.println("❌ Lesson title is required");
+                System.err.println("Lesson title is required");
                 return ResponseEntity.badRequest().body("{\"error\": \"Tiêu đề bài học là bắt buộc\"}");
             }
             
@@ -78,7 +78,7 @@ public class LessonController {
             System.out.println("🟢 Lesson created successfully with ID: " + createdLesson.getId());
             return ResponseEntity.ok(createdLesson);
         } catch (Exception e) {
-            System.err.println("❌ Error creating lesson: " + e.getMessage());
+            System.err.println("Error creating lesson: " + e.getMessage());
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("{\"error\": \"Lỗi tạo bài học: " + e.getMessage() + "\"}");

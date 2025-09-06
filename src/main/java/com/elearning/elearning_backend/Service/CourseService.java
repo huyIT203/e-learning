@@ -212,7 +212,7 @@ public class CourseService {
 
             
         } catch (Exception e) {
-            System.err.println("❌ Error during cascading delete for course " + id + ": " + e.getMessage());
+            System.err.println("Error during cascading delete for course " + id + ": " + e.getMessage());
             e.printStackTrace();
             throw new RuntimeException("Không thể xóa khóa học và dữ liệu liên quan: " + e.getMessage());
         }
@@ -253,7 +253,7 @@ public class CourseService {
                         "ACTIVE".equalsIgnoreCase(status)
                     );
                     if (isApproved) {
-                        System.out.println("✅ Approved course: " + course.getTitle());
+                        System.out.println(" Approved course: " + course.getTitle());
                     }
                     return isApproved;
                 })

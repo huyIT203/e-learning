@@ -583,12 +583,12 @@ function loadCategories() {
             return response.json();
         })
         .then(jobRoles => {
-            console.log('✅ Job roles loaded:', jobRoles);
+            console.log(' Job roles loaded:', jobRoles);
             const createSelect = document.getElementById('createJobRoleSelect');
             const editSelect = document.getElementById('editJobRoleSelect');
             
             if (!createSelect || !editSelect) {
-                console.error('❌ Job role select elements not found');
+                console.error('Job role select elements not found');
                 return;
             }
             
@@ -610,10 +610,10 @@ function loadCategories() {
                 editSelect.appendChild(editOption);
             });
             
-            console.log('✅ Job roles populated successfully');
+            console.log(' Job roles populated successfully');
         })
         .catch(error => {
-            console.error('❌ Error loading job roles:', error);
+            console.error('Error loading job roles:', error);
             alert('Không thể tải danh sách vai trò công việc: ' + error.message);
         });
 
@@ -627,12 +627,12 @@ function loadCategories() {
             return response.json();
         })
         .then(skillCategories => {
-            console.log('✅ Skill categories loaded:', skillCategories);
+            console.log(' Skill categories loaded:', skillCategories);
             const createSelect = document.getElementById('createSkillCategorySelect');
             const editSelect = document.getElementById('editSkillCategorySelect');
             
             if (!createSelect || !editSelect) {
-                console.error('❌ Skill category select elements not found');
+                console.error('Skill category select elements not found');
                 return;
             }
             
@@ -654,10 +654,10 @@ function loadCategories() {
                 editSelect.appendChild(editOption);
             });
             
-            console.log('✅ Skill categories populated successfully');
+            console.log(' Skill categories populated successfully');
         })
         .catch(error => {
-            console.error('❌ Error loading skill categories:', error);
+            console.error('Error loading skill categories:', error);
             alert('Không thể tải danh sách kỹ năng: ' + error.message);
         });
 }

@@ -66,7 +66,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 }
             }
             if (jwt == null) {
-                System.out.println("❌ No JWT token found in header or cookies");
+                System.out.println("No JWT token found in header or cookies");
             }
         }
 
@@ -77,7 +77,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 System.out.println("🟢 Extracted email from JWT: " + userEmail);
                 isTokenValid = true;
             } catch (Exception e) {
-                System.out.println("❌ Error extracting email from JWT: " + e.getMessage());
+                System.out.println("Error extracting email from JWT: " + e.getMessage());
                 userEmail = null;
             }
         }
@@ -101,9 +101,9 @@ public class JwtFilter extends OncePerRequestFilter {
                     System.out.println("🟢 Authentication set successfully for user: " + userEmail);
                 } else {
                     if (user == null) {
-                        System.out.println("❌ User not found in database: " + userEmail);
+                        System.out.println("User not found in database: " + userEmail);
                     } else {
-                        System.out.println("❌ JWT token is invalid for user: " + userEmail);
+                        System.out.println("JWT token is invalid for user: " + userEmail);
                     }
                     // Token is invalid or expired, redirect to session expired page
                     if (!isPublicEndpoint(requestURI) && !requestURI.startsWith("/api/")) {
@@ -112,7 +112,7 @@ public class JwtFilter extends OncePerRequestFilter {
                     }
                 }
             } else if (userEmail == null) {
-                System.out.println("❌ No email extracted from JWT");
+                System.out.println("No email extracted from JWT");
             } else {
                 System.out.println("🟡 User already authenticated: " + SecurityContextHolder.getContext().getAuthentication().getName());
             }

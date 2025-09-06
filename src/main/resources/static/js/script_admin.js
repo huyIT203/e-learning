@@ -236,7 +236,7 @@ function loadCourses() {
 			updateCourseStats(courses);
 		})
 		.catch(error => {
-			console.error('❌ Error loading courses:', error);
+			console.error('Error loading courses:', error);
 			showEmptyState('error', 'Không thể tải danh sách khóa học', error.message);
 		});
 }
@@ -278,7 +278,7 @@ function loadTeachers() {
 			}
 		})
 		.catch(error => {
-			console.error('❌ Error loading teachers:', error);
+			console.error('Error loading teachers:', error);
 			showNotification('error', 'Không thể tải danh sách giảng viên');
 		});
 }
@@ -299,7 +299,7 @@ function loadCourseStats() {
 			animateNumber('totalStudents', stats.totalStudents);
 		})
 		.catch(error => {
-			console.error('❌ Error loading course stats:', error);
+			console.error('Error loading course stats:', error);
 			showNotification('error', 'Không thể tải thống kê');
 		});
 }
@@ -433,7 +433,7 @@ function filterCourses() {
 function renderFilteredCourses(courses) {
 	const courseList = document.getElementById('courseList');
 	if (!courseList) {
-		console.error('❌ courseList element not found');
+		console.error('courseList element not found');
 		return;
 	}
 
@@ -536,7 +536,7 @@ function renderFilteredCourses(courses) {
 		});
 	}, 100);
 	
-	console.log('✅ Courses rendered successfully');
+	console.log(' Courses rendered successfully');
 }
 
 function showEmptyState(type, title, message) {
@@ -679,7 +679,7 @@ function showNotification(type, message) {
 // Navigation function
 function goToLessons(courseId) {
 	if (!courseId) {
-		console.error('❌ Course ID is required for navigation');
+		console.error('Course ID is required for navigation');
 		showNotification('error', 'Lỗi: Không tìm thấy ID khóa học');
 		return;
 	}
@@ -768,7 +768,7 @@ function createCourse(event) {
 		showNotification('success', 'Tạo khóa học thành công!');
 	})
 	.catch(err => {
-		console.error('❌ Error creating course:', err);
+		console.error('Error creating course:', err);
 		showNotification('error', 'Tạo khóa học thất bại: ' + err.message);
 	});
 }
@@ -817,7 +817,7 @@ function editCourse(courseId) {
 			modal.show();
 		})
 		.catch(error => {
-			console.error('❌ Error loading course:', error);
+			console.error('Error loading course:', error);
 			showNotification('error', error.message || 'Không thể tải thông tin khóa học');
 		});
 }
@@ -872,7 +872,7 @@ function updateCourse(event) {
 		showNotification('success', 'Cập nhật khóa học thành công!');
 	})
 	.catch(error => {
-		console.error('❌ Error updating course:', error);
+		console.error('Error updating course:', error);
 		showNotification('error', 'Không thể cập nhật khóa học: ' + error.message);
 	});
 }
@@ -1005,7 +1005,7 @@ function viewCourseDetails(courseId) {
 			new bootstrap.Modal(modal).show();
 		})
 		.catch(error => {
-			console.error('❌ Error loading course details:', error);
+			console.error('Error loading course details:', error);
 			showNotification('error', 'Không thể tải chi tiết khóa học');
 		});
 }
@@ -1016,7 +1016,7 @@ function deleteCourse(courseId) {
 	
 	// Validate courseId
 	if (!courseId || courseId.trim() === '') {
-		console.error('❌ Invalid courseId:', courseId);
+		console.error('Invalid courseId:', courseId);
 		showNotification('error', 'Lỗi: ID khóa học không hợp lệ');
 		return;
 	}
@@ -1075,7 +1075,7 @@ function showDeleteConfirmModal(courseId) {
 						<li>• Tất cả dữ liệu liên quan khác</li>
 					</ul>
 					<p style="margin-top: 15px; color: #dc3545; font-weight: bold;">
-						❌ KHÔNG THỂ HOÀN TÁC sau khi xóa!
+						KHÔNG THỂ HOÀN TÁC sau khi xóa!
 					</p>
 				</div>
 				<div style="display: flex; gap: 15px; justify-content: center;">
@@ -1089,7 +1089,7 @@ function showDeleteConfirmModal(courseId) {
 						font-size: 16px;
 						transition: all 0.3s ease;
 					">
-						❌ Hủy bỏ
+						Hủy bỏ
 					</button>
 					<button id="confirmDelete" style="
 						background: #dc3545;
@@ -1211,7 +1211,7 @@ function showSecondConfirmModal(courseId) {
 						font-size: 16px;
 						transition: all 0.3s ease;
 					">
-						✅ Giữ lại khóa học
+						 Giữ lại khóa học
 					</button>
 					<button id="finalConfirm" style="
 						background: #dc3545;
@@ -1254,7 +1254,7 @@ function showSecondConfirmModal(courseId) {
 	});
 
 	document.getElementById('finalConfirm').addEventListener('click', () => {
-		console.log('✅ User confirmed deletion, proceeding...');
+		console.log(' User confirmed deletion, proceeding...');
 		document.getElementById('secondConfirmModal').remove();
 		executeDelete(courseId);
 	});
@@ -1313,15 +1313,15 @@ function executeDelete(courseId) {
 		
 			if (!response.ok) {
 				return response.text().then(text => {
-				console.error('❌ Server error response:', text);
+				console.error('Server error response:', text);
 				throw new Error(text || `HTTP ${response.status}: Không thể xóa khóa học`);
 			});
 		}
 		
-		console.log('✅ Course and all related data deleted successfully');
+		console.log(' Course and all related data deleted successfully');
 		
 		// Success notification
-		showNotification('success', '✅ Đã xóa khóa học và tất cả dữ liệu liên quan thành công!');
+		showNotification('success', ' Đã xóa khóa học và tất cả dữ liệu liên quan thành công!');
 		
 		// Reload data to reflect changes
 		console.log('🔄 Reloading courses and stats...');
@@ -1335,8 +1335,8 @@ function executeDelete(courseId) {
 		
 		})
 		.catch(error => {
-		console.error('❌ Error deleting course:', error);
-		console.error('❌ Full error object:', error);
+		console.error('Error deleting course:', error);
+		console.error('Full error object:', error);
 		
 		// Check if it's an authentication error and try fallback
 		if (error.message.includes('401') || error.message.includes('403') || 
@@ -1363,7 +1363,7 @@ function executeDelete(courseId) {
 			errorMessage = error.message;
 		}
 		
-		showNotification('error', '❌ ' + errorMessage);
+		showNotification('error', '' + errorMessage);
 	})
 	.finally(() => {
 		console.log('🔄 Restoring button state...');
@@ -1371,7 +1371,7 @@ function executeDelete(courseId) {
 		if (deleteButton && originalButtonContent) {
 			deleteButton.innerHTML = originalButtonContent;
 			deleteButton.disabled = false;
-			console.log('✅ Button state restored');
+			console.log(' Button state restored');
 		}
 	});
 }
@@ -1416,7 +1416,7 @@ function showApproveConfirmModal(courseId) {
 				border: 3px solid #28a745;
 			">
 				<div style="color: #28a745; font-size: 48px; margin-bottom: 20px;">
-					✅
+					
 						</div>
 				<h3 style="color: #28a745; margin-bottom: 20px; font-size: 22px;">
 					Phê duyệt khóa học
@@ -1438,7 +1438,7 @@ function showApproveConfirmModal(courseId) {
 						font-size: 16px;
 						transition: all 0.3s ease;
 					">
-						❌ Hủy bỏ
+						Hủy bỏ
 								</button>
 					<button id="confirmApprove" style="
 						background: #28a745;
@@ -1450,7 +1450,7 @@ function showApproveConfirmModal(courseId) {
 						font-size: 16px;
 						transition: all 0.3s ease;
 					">
-						✅ Phê duyệt
+						 Phê duyệt
 								</button>
 						</div>
 					</div>
@@ -1467,7 +1467,7 @@ function showApproveConfirmModal(courseId) {
 	});
 
 	document.getElementById('confirmApprove').addEventListener('click', () => {
-		console.log('✅ User confirmed approval');
+		console.log(' User confirmed approval');
 		document.getElementById('approveConfirmModal').remove();
 		executeApprove(courseId);
 	});
@@ -1503,12 +1503,12 @@ function executeApprove(courseId) {
 		return response.json();
 		})
 		.then(() => {
-		showNotification('success', '✅ Phê duyệt khóa học thành công!');
+		showNotification('success', ' Phê duyệt khóa học thành công!');
 			loadCourses();
 		loadCourseStats();
 	})
 	.catch(error => {
-		console.error('❌ Error approving course:', error);
+		console.error('Error approving course:', error);
 		showNotification('error', 'Không thể phê duyệt khóa học: ' + error.message);
 	});
 }
@@ -1575,7 +1575,7 @@ function showRejectConfirmModal(courseId) {
 						font-size: 16px;
 						transition: all 0.3s ease;
 					">
-						❌ Hủy bỏ
+						Hủy bỏ
 					</button>
 					<button id="confirmReject" style="
 						background: #ffc107;
@@ -1646,7 +1646,7 @@ function executeReject(courseId) {
 		loadCourseStats();
 	})
 	.catch(error => {
-		console.error('❌ Error rejecting course:', error);
+		console.error('Error rejecting course:', error);
 		showNotification('error', 'Không thể từ chối khóa học: ' + error.message);
 	});
 }
@@ -1657,15 +1657,15 @@ function testDeleteFunction() {
 	
 	// Check if deleteCourse function exists
 	if (typeof deleteCourse === 'function') {
-		console.log('✅ deleteCourse function exists');
+		console.log(' deleteCourse function exists');
 	} else {
-		console.error('❌ deleteCourse function not found');
+		console.error('deleteCourse function not found');
 	}
 	
 	// Check if DOM elements exist
 	const courseList = document.getElementById('courseList');
 	if (courseList) {
-		console.log('✅ courseList element found');
+		console.log(' courseList element found');
 		
 		const deleteButtons = courseList.querySelectorAll('.delete-btn');
 		console.log('🔘 Found', deleteButtons.length, 'delete buttons');
@@ -1675,7 +1675,7 @@ function testDeleteFunction() {
 			console.log(`Button ${index + 1}: Course ID = ${courseId}`);
 		});
 	} else {
-		console.error('❌ courseList element not found');
+		console.error('courseList element not found');
 	}
 	
 	// Check global variables
@@ -1693,7 +1693,7 @@ function testDeleteFunction() {
 			console.log('📚 API returned', courses.length, 'courses');
 		})
 		.catch(error => {
-			console.error('❌ API Error:', error);
+			console.error('API Error:', error);
 		});
 }
 

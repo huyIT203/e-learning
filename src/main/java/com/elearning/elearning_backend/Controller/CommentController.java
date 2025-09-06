@@ -214,7 +214,7 @@ public class CommentController {
             );
             
         } catch (Exception e) {
-            System.err.println("❌ Error in WebSocket addComment: " + e.getMessage());
+            System.err.println("Error in WebSocket addComment: " + e.getMessage());
         }
     }
     

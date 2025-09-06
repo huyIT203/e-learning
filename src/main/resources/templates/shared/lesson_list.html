@@ -1859,13 +1859,13 @@
                     currentUserRole = authData.role || 'GUEST';
                     currentUserId = authData.userId || 0;
                     
-                    console.log('✅ User authenticated via API:', {
+                    console.log(' User authenticated via API:', {
                         role: currentUserRole,
                         loggedIn: isUserLoggedIn,
                         userId: currentUserId
                     });
             } else {
-                    console.log('❌ User not authenticated');
+                    console.log('User not authenticated');
             }
         }
         } catch (error) {
@@ -2069,7 +2069,7 @@
                 return window.userRole;
             }
             
-            console.log('❌ Could not determine user role from any method');
+            console.log('Could not determine user role from any method');
             return null;
         }
     });
@@ -2272,7 +2272,7 @@
             }
         } catch (error) {
             console.error('Error deleting lesson:', error);
-            alert('❌ Lỗi: ' + error.message);
+            alert('Lỗi: ' + error.message);
         }
     }
 
@@ -2536,7 +2536,7 @@ example();</code></pre>
             });
 
             if (response.ok) {
-                // alert('✅ Bài học đã được tạo thành công!');
+                // alert(' Bài học đã được tạo thành công!');
                 hideAddLessonModal();
                 window.location.reload();
             } else {
@@ -2554,7 +2554,7 @@ example();</code></pre>
             }
         } catch (error) {
             console.error('Error creating lesson:', error);
-            alert('❌ Lỗi: ' + error.message);
+            alert('Lỗi: ' + error.message);
         } finally {
             submitBtn.disabled = false;
             submitBtn.innerHTML = originalText;
@@ -2616,7 +2616,7 @@ example();</code></pre>
             });
 
             if (response.ok) {
-                // alert('✅ Bài học đã được cập nhật thành công!');
+                // alert(' Bài học đã được cập nhật thành công!');
                 hideEditLessonModal();
                 window.location.reload();
             } else {
@@ -2634,7 +2634,7 @@ example();</code></pre>
             }
         } catch (error) {
             console.error('Error updating lesson:', error);
-            alert('❌ Lỗi: ' + error.message);
+            alert('Lỗi: ' + error.message);
         } finally {
             updateBtn.disabled = false;
             updateBtn.innerHTML = originalText;
@@ -2828,7 +2828,7 @@ example();</code></pre>
             let commentMenu = '';
             
             if (userLoggedIn) {
-                console.log('✅ User is logged in, creating menu for comment:', comment.id);
+                console.log(' User is logged in, creating menu for comment:', comment.id);
                 
                 let menuOptions = '';
                 
@@ -2841,7 +2841,7 @@ example();</code></pre>
                 
                 // Show delete option for TEACHER and ADMIN
                 if (userRole === 'TEACHER' || userRole === 'ADMIN') {
-                    console.log('✅ Adding delete option for role:', userRole);
+                    console.log(' Adding delete option for role:', userRole);
                     menuOptions += `
                         <button class="menu-item delete" onclick="deleteComment('${comment.id}', '${comment.userName}')">
                             <i class="fas fa-trash"></i> Xóa
@@ -2862,9 +2862,9 @@ example();</code></pre>
                     </div>
                 `;
                 
-                console.log('✅ Menu created for comment:', comment.id);
+                console.log(' Menu created for comment:', comment.id);
             } else {
-                console.log('❌ User not logged in, no menu for comment:', comment.id);
+                console.log('User not logged in, no menu for comment:', comment.id);
             }
             
             return `
@@ -2895,8 +2895,8 @@ example();</code></pre>
         
         commentsList.innerHTML = commentsHtml;
         
-        console.log('✅ Comments displayed successfully');
-        console.log('✅ Total comments:', comments.length);
+        console.log(' Comments displayed successfully');
+        console.log(' Total comments:', comments.length);
     }
 
     // Display rating stats function
@@ -3032,7 +3032,7 @@ example();</code></pre>
     
     if (dataCourseId && dataCourseId.trim() !== '') {
         courseId = dataCourseId.trim();
-        console.log('✅ Using CourseId from data attribute:', courseId);
+        console.log(' Using CourseId from data attribute:', courseId);
     } else {
         // Method 2: Try to get courseId from Thymeleaf
         const thymeleafCourseId = /*[[${course != null ? course.id : ''}]]*/ '';
@@ -3040,7 +3040,7 @@ example();</code></pre>
         
         if (thymeleafCourseId && thymeleafCourseId.trim() !== '') {
             courseId = thymeleafCourseId.trim();
-            console.log('✅ Using CourseId from Thymeleaf:', courseId);
+            console.log(' Using CourseId from Thymeleaf:', courseId);
         } else {
             // Method 3: If courseId is empty from Thymeleaf, try to extract from URL
             const urlPath = window.location.pathname;
@@ -3050,15 +3050,15 @@ example();</code></pre>
             const courseIdMatch = urlPath.match(/\/course\/([^\/]+)\/lessons/);
             if (courseIdMatch && courseIdMatch[1]) {
                 courseId = courseIdMatch[1];
-                console.log('✅ CourseId extracted from URL:', courseId);
+                console.log(' CourseId extracted from URL:', courseId);
             } else {
                 // Try alternative pattern: /courses/{courseId}
                 const altCourseIdMatch = urlPath.match(/\/courses\/([^\/]+)/);
                 if (altCourseIdMatch && altCourseIdMatch[1]) {
                     courseId = altCourseIdMatch[1];
-                    console.log('✅ CourseId extracted from alternative URL pattern:', courseId);
+                    console.log(' CourseId extracted from alternative URL pattern:', courseId);
                 } else {
-                    console.error('❌ Could not extract courseId from URL');
+                    console.error('Could not extract courseId from URL');
                 }
             }
         }
@@ -3230,7 +3230,7 @@ example();</code></pre>
             commentSocket.debug = null;
             
             commentSocket.connect({}, function(frame) {
-                console.log('✅ Comment WebSocket connected:', frame);
+                console.log(' Comment WebSocket connected:', frame);
                 isCommentSocketConnected = true;
                 
                 // Subscribe to this course's comment updates
@@ -3240,7 +3240,7 @@ example();</code></pre>
                     subscribeToCommentUpdates(courseId);
                 }
             }, function(error) {
-                console.error('❌ Comment WebSocket connection error:', error);
+                console.error('Comment WebSocket connection error:', error);
                 isCommentSocketConnected = false;
                 
                 // Reconnect after 3 seconds
@@ -3248,7 +3248,7 @@ example();</code></pre>
             });
             
         } catch (error) {
-            console.error('❌ Error connecting comment WebSocket:', error);
+            console.error('Error connecting comment WebSocket:', error);
             isCommentSocketConnected = false;
         }
     }
@@ -3267,7 +3267,7 @@ example();</code></pre>
                     console.log('📨 Comment update received:', data);
                     handleCommentUpdate(data);
                 } catch (error) {
-                    console.error('❌ Error parsing comment update:', error);
+                    console.error('Error parsing comment update:', error);
                 }
             });
             
@@ -3278,13 +3278,13 @@ example();</code></pre>
                     console.log('📊 Rating stats update received:', data);
                     handleCommentUpdate(data);
                 } catch (error) {
-                    console.error('❌ Error parsing rating stats update:', error);
+                    console.error('Error parsing rating stats update:', error);
                 }
             });
             
             console.log('📡 Subscribed to course comment updates:', courseId);
         } catch (error) {
-            console.error('❌ Error subscribing to comment updates:', error);
+            console.error('Error subscribing to comment updates:', error);
         }
     }
     
@@ -3392,7 +3392,7 @@ example();</code></pre>
             
             console.log('📊 Rating stats updated:', stats);
         } catch (error) {
-            console.error('❌ Error updating rating stats:', error);
+            console.error('Error updating rating stats:', error);
         }
     }
     

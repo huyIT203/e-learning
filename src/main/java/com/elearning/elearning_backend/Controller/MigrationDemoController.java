@@ -1,19 +1,22 @@
 package com.elearning.elearning_backend.Controller;
 
-import com.elearning.elearning_backend.migration.service.MonitoringService;
-import com.elearning.elearning_backend.migration.service.MigrationService;
-import com.elearning.elearning_backend.migration.service.ValidationService;
-import com.elearning.elearning_backend.migration.service.AuditService;
-import com.elearning.elearning_backend.migration.model.MigrationRecord;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
+import com.elearning.elearning_backend.migration.model.MigrationRecord;
+import com.elearning.elearning_backend.migration.service.AuditService;
+import com.elearning.elearning_backend.migration.service.MigrationService;
+import com.elearning.elearning_backend.migration.service.MonitoringService;
+import com.elearning.elearning_backend.migration.service.ValidationService;
 
 @RestController
 @RequestMapping("/api/demo")
@@ -50,17 +53,17 @@ public class MigrationDemoController {
         Map<String, Object> response = new HashMap<>();
         
         // Check services
-        response.put("migrationService", migrationService != null ? "✅ LOADED" : "❌ NOT LOADED");
-        response.put("monitoringService", monitoringService != null ? "✅ LOADED" : "❌ NOT LOADED");
-        response.put("validationService", validationService != null ? "✅ LOADED" : "❌ NOT LOADED");
-        response.put("auditService", auditService != null ? "✅ LOADED" : "❌ NOT LOADED");
+        response.put("migrationService", migrationService != null ? " LOADED" : "NOT LOADED");
+        response.put("monitoringService", monitoringService != null ? " LOADED" : "NOT LOADED");
+        response.put("validationService", validationService != null ? " LOADED" : "NOT LOADED");
+        response.put("auditService", auditService != null ? " LOADED" : "NOT LOADED");
         
         // Check database connection
         try {
             String dbVersion = jdbcTemplate.queryForObject("SELECT VERSION()", String.class);
-            response.put("database", "✅ CONNECTED - " + dbVersion);
+            response.put("database", " CONNECTED - " + dbVersion);
         } catch (Exception e) {
-            response.put("database", "❌ CONNECTION ERROR - " + e.getMessage());
+            response.put("database", "CONNECTION ERROR - " + e.getMessage());
         }
         
         return ResponseEntity.ok(response);
@@ -155,7 +158,7 @@ public class MigrationDemoController {
                 monitoringService.recordSuccessfulMigration(sample1);
                 monitoringService.recordSuccessfulMigration(sample2);
                 
-                response.put("message", "✅ Sample data created successfully!");
+                response.put("message", " Sample data created successfully!");
                 response.put("samplesCreated", 2);
                 
             } catch (Exception e) {
@@ -200,7 +203,7 @@ public class MigrationDemoController {
                 
                 response.put("validNames", validResults);
                 response.put("invalidNames", invalidResults);
-                response.put("message", "✅ Validation tests completed!");
+                response.put("message", " Validation tests completed!");
                 
             } catch (Exception e) {
                 response.put("error", e.getMessage());
@@ -221,18 +224,18 @@ public class MigrationDemoController {
         
         // System Status
         Map<String, Object> systemStatus = new HashMap<>();
-        systemStatus.put("migrationService", migrationService != null ? "✅ ACTIVE" : "❌ INACTIVE");
-        systemStatus.put("monitoringService", monitoringService != null ? "✅ ACTIVE" : "❌ INACTIVE");
-        systemStatus.put("validationService", validationService != null ? "✅ ACTIVE" : "❌ INACTIVE");
-        systemStatus.put("auditService", auditService != null ? "✅ ACTIVE" : "❌ INACTIVE");
+        systemStatus.put("migrationService", migrationService != null ? " ACTIVE" : "INACTIVE");
+        systemStatus.put("monitoringService", monitoringService != null ? " ACTIVE" : "INACTIVE");
+        systemStatus.put("validationService", validationService != null ? " ACTIVE" : "INACTIVE");
+        systemStatus.put("auditService", auditService != null ? " ACTIVE" : "INACTIVE");
         response.put("systemStatus", systemStatus);
         
         // Database Status
         try {
             String dbVersion = jdbcTemplate.queryForObject("SELECT VERSION()", String.class);
-            response.put("database", "✅ MySQL " + dbVersion);
+            response.put("database", " MySQL " + dbVersion);
         } catch (Exception e) {
-            response.put("database", "❌ " + e.getMessage());
+            response.put("database", "" + e.getMessage());
         }
         
         // Available Endpoints

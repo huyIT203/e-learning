@@ -311,7 +311,7 @@ function loadUsers() {
         hideLoading();
     })
     .catch(error => {
-        console.error('❌ Error loading users:', error);
+        console.error('Error loading users:', error);
         showError('Không thể tải danh sách người dùng: ' + error.message);
         hideLoading();
     });
@@ -503,7 +503,7 @@ function setupModals() {
 function openRoleModal(userId) {
     const user = getUserById(userId);
     if (!user) {
-        console.error('❌ User not found:', userId);
+        console.error('User not found:', userId);
         return;
     }
     
@@ -527,7 +527,7 @@ function closeRoleModal() {
 
 function confirmRoleChange() {
     if (!selectedUserId) {
-        console.error('❌ No user selected');
+        console.error('No user selected');
         return;
     }
     
@@ -535,7 +535,7 @@ function confirmRoleChange() {
     const user = getUserById(selectedUserId);
     
     if (!user) {
-        console.error('❌ User not found:', selectedUserId);
+        console.error('User not found:', selectedUserId);
         return;
     }
     
@@ -568,7 +568,7 @@ function confirmRoleChange() {
         return response.json();
     })
     .then(updatedUser => {
-        console.log('✅ Role updated successfully:', updatedUser);
+        console.log(' Role updated successfully:', updatedUser);
         
         // Update user in local array
         const userIndex = allUsers.findIndex(u => u.id === selectedUserId);
@@ -587,7 +587,7 @@ function confirmRoleChange() {
         showSuccessMessage(`Đã cập nhật vai trò của ${user.name} thành ${getRoleText(newRole)}`);
     })
     .catch(error => {
-        console.error('❌ Error updating role:', error);
+        console.error('Error updating role:', error);
         alert('Có lỗi xảy ra khi cập nhật vai trò: ' + error.message);
     })
     .finally(() => {
@@ -603,7 +603,7 @@ function confirmRoleChange() {
 function openStatusModal(userId) {
     const user = getUserById(userId);
     if (!user) {
-        console.error('❌ User not found:', userId);
+        console.error('User not found:', userId);
         return;
     }
     
@@ -628,7 +628,7 @@ function closeStatusModal() {
 
 function confirmStatusChange() {
     if (!selectedUserId) {
-        console.error('❌ No user selected');
+        console.error('No user selected');
         return;
     }
     
@@ -637,7 +637,7 @@ function confirmStatusChange() {
     const user = getUserById(selectedUserId);
     
     if (!user) {
-        console.error('❌ User not found:', selectedUserId);
+        console.error('User not found:', selectedUserId);
         return;
     }
     
@@ -673,7 +673,7 @@ function confirmStatusChange() {
         return response.json();
     })
     .then(updatedUser => {
-        console.log('✅ Status updated successfully:', updatedUser);
+        console.log(' Status updated successfully:', updatedUser);
         
         // Update user in local array
         const userIndex = allUsers.findIndex(u => u.id === selectedUserId);
@@ -692,7 +692,7 @@ function confirmStatusChange() {
         showSuccessMessage(`Đã cập nhật trạng thái của ${user.name} thành ${getStatusText(newStatus)}`);
     })
     .catch(error => {
-        console.error('❌ Error updating status:', error);
+        console.error('Error updating status:', error);
         alert('Có lỗi xảy ra khi cập nhật trạng thái: ' + error.message);
     })
     .finally(() => {
@@ -708,7 +708,7 @@ function confirmStatusChange() {
 function openDeleteModal(userId) {
     const user = getUserById(userId);
     if (!user) {
-        console.error('❌ User not found:', userId);
+        console.error('User not found:', userId);
         return;
     }
     
@@ -730,13 +730,13 @@ function closeDeleteModal() {
 
 function confirmDeleteUser() {
     if (!selectedUserId) {
-        console.error('❌ No user selected');
+        console.error('No user selected');
         return;
     }
     
     const user = getUserById(selectedUserId);
     if (!user) {
-        console.error('❌ User not found:', selectedUserId);
+        console.error('User not found:', selectedUserId);
         return;
     }
     
@@ -761,7 +761,7 @@ function confirmDeleteUser() {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
         
-        console.log('✅ User deleted successfully');
+        console.log(' User deleted successfully');
         
         // Remove user from local array
         allUsers = allUsers.filter(u => u.id !== selectedUserId);
@@ -777,7 +777,7 @@ function confirmDeleteUser() {
         showSuccessMessage(`Đã xóa người dùng ${user.name}`);
     })
     .catch(error => {
-        console.error('❌ Error deleting user:', error);
+        console.error('Error deleting user:', error);
         alert('Có lỗi xảy ra khi xóa người dùng: ' + error.message);
     })
     .finally(() => {

@@ -610,7 +610,7 @@ function loadTeacherCourses() {
 			renderFilteredCourses(courses);
 		})
 		.catch(err => {
-			console.error('❌ Lỗi khi tải khóa học của giáo viên:', err);
+			console.error('Lỗi khi tải khóa học của giáo viên:', err);
 			
 			courseList.innerHTML = `
 				<tr>
@@ -820,7 +820,7 @@ function updateCourse() {
 
 function viewCourseDetails(courseId) {
 	if (!courseId) {
-		console.error('❌ Course ID is required for viewing details');
+		console.error('Course ID is required for viewing details');
 		alert('Lỗi: Không tìm thấy ID khóa học');
 		return;
 	}
@@ -853,9 +853,9 @@ function loadCourseStats() {
         const element = document.getElementById(id);
         if (element) {
             element.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-            console.log(`✅ Found element: ${id}`);
+            console.log(` Found element: ${id}`);
         } else {
-            console.warn(`❌ Element not found: ${id}`);
+            console.warn(`Element not found: ${id}`);
         }
     });
 
@@ -892,36 +892,36 @@ function loadCourseStats() {
             if (totalCoursesEl) {
                 const value = (stats.totalCourses || 0).toLocaleString();
                 totalCoursesEl.textContent = value;
-                console.log('✅ Updated totalCourses:', value);
+                console.log(' Updated totalCourses:', value);
             } else {
-                console.error('❌ totalCourses element not found');
+                console.error('totalCourses element not found');
             }
             
             const totalStudentsEl = document.getElementById('totalStudents');
             if (totalStudentsEl) {
                 const value = (stats.totalStudents || 0).toLocaleString();
                 totalStudentsEl.textContent = value;
-                console.log('✅ Updated totalStudents:', value);
+                console.log(' Updated totalStudents:', value);
             } else {
-                console.error('❌ totalStudents element not found');
+                console.error('totalStudents element not found');
             }
             
             const totalLessonsEl = document.getElementById('totalLessons');
             if (totalLessonsEl) {
                 const value = (stats.totalLessons || 0).toLocaleString();
                 totalLessonsEl.textContent = value;
-                console.log('✅ Updated totalLessons:', value);
+                console.log(' Updated totalLessons:', value);
             } else {
-                console.error('❌ totalLessons element not found');
+                console.error('totalLessons element not found');
             }
             
             const pendingCoursesEl = document.getElementById('pendingCourses');
             if (pendingCoursesEl) {
                 const value = (stats.pendingCourses || 0).toLocaleString();
                 pendingCoursesEl.textContent = value;
-                console.log('✅ Updated pendingCourses:', value);
+                console.log(' Updated pendingCourses:', value);
             } else {
-                console.error('❌ pendingCourses element not found');
+                console.error('pendingCourses element not found');
             }
             
             // Add visual feedback for empty states
@@ -940,8 +940,8 @@ function loadCourseStats() {
             console.log('🎉 Stats update completed successfully!');
         })
         .catch(err => {
-            console.error('❌ Lỗi tải thống kê giáo viên:', err);
-            console.error('❌ Error details:', {
+            console.error('Lỗi tải thống kê giáo viên:', err);
+            console.error('Error details:', {
                 message: err.message,
                 stack: err.stack
             });
@@ -972,7 +972,7 @@ function loadCourseStats() {
 //LESSON
 function goToLessons(courseId) {
 	if (!courseId) {
-		console.error('❌ Course ID is required for navigation');
+		console.error('Course ID is required for navigation');
 		alert('Lỗi: Không tìm thấy ID khóa học');
 		return;
 	}

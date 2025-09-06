@@ -46,7 +46,7 @@ public class ChatController {
         
         // Save message and let ChatService handle the WebSocket broadcasting
         ChatMessageDTO savedMessage = chatService.sendMessage(chatMessage);
-        System.out.println("✅ Message saved and broadcasted via ChatService");
+        System.out.println(" Message saved and broadcasted via ChatService");
     }
     
     @MessageMapping("/chat.addUser")
@@ -184,7 +184,7 @@ public class ChatController {
             chatService.deleteConversation(userId1, userId2, courseId);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
-            System.err.println("❌ Error deleting conversation: " + e.getMessage());
+            System.err.println("Error deleting conversation: " + e.getMessage());
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -221,7 +221,7 @@ public class ChatController {
             System.out.println("Returning " + messages.size() + " messages");
             return ResponseEntity.ok(messages);
         } catch (Exception e) {
-            System.err.println("❌ Error loading conversation: " + e.getMessage());
+            System.err.println("Error loading conversation: " + e.getMessage());
             return ResponseEntity.internalServerError().build();
         }
     }

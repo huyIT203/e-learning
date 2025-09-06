@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
     
-    console.log('✅ Sidebar and content elements found');
+    console.log(' Sidebar and content elements found');
     
     // Handle menu toggle
     if (menuToggle) {

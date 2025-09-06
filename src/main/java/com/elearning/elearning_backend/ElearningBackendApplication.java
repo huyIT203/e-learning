@@ -22,9 +22,9 @@ public class ElearningBackendApplication {
 	public void initializeData() {
 		try {
 			categoryService.initializeDefaultCategories();
-			System.out.println("✅ Default categories initialized successfully");
+			System.out.println(" Default categories initialized successfully");
 		} catch (Exception e) {
-			System.err.println("❌ Error initializing default categories: " + e.getMessage());
+			System.err.println("Error initializing default categories: " + e.getMessage());
 		}
 	}
 }

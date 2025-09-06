@@ -76,15 +76,15 @@ public class TeacherViewController {
                 if (user != null) {
                     System.out.println("🟢 Found user: " + user.getEmail() + " with role: " + user.getRole());
                 } else {
-                    System.out.println("❌ User not found in database for email: " + email);
+                    System.out.println("User not found in database for email: " + email);
                 }
                 return user;
             } else {
-                System.out.println("❌ Authentication is null, not authenticated, or anonymous user");
+                System.out.println("Authentication is null, not authenticated, or anonymous user");
                 return null;
             }
         } catch (Exception e) {
-            System.out.println("❌ Error getting current user: " + e.getMessage());
+            System.out.println("Error getting current user: " + e.getMessage());
             e.printStackTrace();
             return null;
         }
@@ -120,26 +120,26 @@ public class TeacherViewController {
     public String courseLessons(@PathVariable String courseId, Model model) {
         User user = getCurrentUser();
         if (user == null) {
-            System.out.println("❌ User not authenticated for course lessons");
+            System.out.println("User not authenticated for course lessons");
             return "redirect:/login";
         }
         
         // Allow both TEACHER and ADMIN to access
         if (user.getRole() != Role.TEACHER && user.getRole() != Role.ADMIN) {
-            System.out.println("❌ Access denied - user role: " + user.getRole());
+            System.out.println("Access denied - user role: " + user.getRole());
             return "redirect:/login";
         }
         
         Course course = courseService.getCourseById(courseId);
         if (course == null) {
-            System.out.println("❌ Course not found: " + courseId);
+            System.out.println("Course not found: " + courseId);
             return "error/404";
         }
         
         // For TEACHER role, check if they own the course
         // For ADMIN role, allow access to all courses
         if (user.getRole() == Role.TEACHER && !course.getCreatedByUserId().equals(user.getId())) {
-            System.out.println("❌ Teacher doesn't own this course - Teacher: " + user.getId() + ", Course owner: " + course.getCreatedByUserId());
+            System.out.println("Teacher doesn't own this course - Teacher: " + user.getId() + ", Course owner: " + course.getCreatedByUserId());
             return "error/403"; // Forbidden
         }
         
@@ -780,7 +780,7 @@ public class TeacherViewController {
             
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            System.err.println("❌ Error in getTeacherCourses: " + e.getMessage());
+            System.err.println("Error in getTeacherCourses: " + e.getMessage());
             e.printStackTrace();
             Map<String, Object> response = new HashMap<>();
             response.put("success", false);

@@ -1,13 +1,19 @@
 package com.elearning.elearning_backend.Service;
 
-import com.elearning.elearning_backend.DTO.*;
-import com.elearning.elearning_backend.Model.User;
-import com.elearning.elearning_backend.Repository.UserRepository;
-import com.elearning.elearning_backend.Enum.Role;
-import com.elearning.elearning_backend.Security.JwtService;
-import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import com.elearning.elearning_backend.DTO.AuthResponse;
+import com.elearning.elearning_backend.DTO.ChangePasswordRequest;
+import com.elearning.elearning_backend.DTO.LoginRequest;
+import com.elearning.elearning_backend.DTO.RegisterRequest;
+import com.elearning.elearning_backend.DTO.ResetPasswordRequest;
+import com.elearning.elearning_backend.Enum.Role;
+import com.elearning.elearning_backend.Model.User;
+import com.elearning.elearning_backend.Repository.UserRepository;
+import com.elearning.elearning_backend.Security.JwtService;
+
+import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
@@ -27,7 +33,7 @@ public class AuthService {
                 .name(request.getName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.STUDENT) // ✅ Gán mặc định
+                .role(Role.STUDENT) //  Gán mặc định
                 .build();
 
         userRepository.save(user);

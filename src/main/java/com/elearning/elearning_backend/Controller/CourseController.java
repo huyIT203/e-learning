@@ -116,7 +116,7 @@ public class CourseController {
             System.out.println("🔍 Authentication: " + authentication);
             
             if (authentication == null || authentication.getPrincipal() == null) {
-                System.out.println("❌ No authentication found");
+                System.out.println("No authentication found");
                 return ResponseEntity.status(401).build();
             }
             
@@ -126,7 +126,7 @@ public class CourseController {
             // Get teacher user to find ID
             User teacher = courseService.getUserByEmail(teacherEmail);
             if (teacher == null) {
-                System.out.println("❌ Teacher not found with email: " + teacherEmail);
+                System.out.println("Teacher not found with email: " + teacherEmail);
                 return ResponseEntity.status(404).build();
             }
             
@@ -139,7 +139,7 @@ public class CourseController {
             return ResponseEntity.ok(stats);
             
         } catch (Exception e) {
-            System.out.println("❌ Error getting teacher stats: " + e.getMessage());
+            System.out.println("Error getting teacher stats: " + e.getMessage());
             e.printStackTrace();
             return ResponseEntity.status(500).build();
         }

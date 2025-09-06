@@ -662,7 +662,7 @@
             stompClient = Stomp.over(socket);
             
             stompClient.connect({}, function(frame) {
-                console.log('✅ WebSocket Connected: ' + frame);
+                console.log(' WebSocket Connected: ' + frame);
                 reconnectAttempts = 0; // Reset reconnect attempts on successful connection
                 
                 // Subscribe to personal message queue
@@ -691,7 +691,7 @@
                 }));
                 
             }, function(error) {
-                console.error('❌ WebSocket connection error:', error);
+                console.error('WebSocket connection error:', error);
                 handleWebSocketError();
             });
         }
@@ -704,7 +704,7 @@
                 console.log(`🔄 Attempting to reconnect in ${delay/1000} seconds... (Attempt ${reconnectAttempts}/${maxReconnectAttempts})`);
                 setTimeout(connectWebSocket, delay);
             } else {
-                console.error('❌ Max reconnection attempts reached. Please refresh the page.');
+                console.error('Max reconnection attempts reached. Please refresh the page.');
                 showNotification('Mất kết nối chat. Vui lòng refresh trang.', 'error');
             }
         }
@@ -750,7 +750,7 @@
             
             // Handle our own messages being echoed back (confirmation)
             if (isOurOwnMessage && isFromCurrentChat) {
-                console.log('✅ Our own message echoed back - already displayed in UI');
+                console.log(' Our own message echoed back - already displayed in UI');
                 // Don't add to UI again as it was already added when sending
                 // Just refresh contacts to update last message
                 loadContacts();
@@ -1236,7 +1236,7 @@
                 });
                 
                 if (response.ok) {
-                    console.log('✅ Conversation deleted successfully');
+                    console.log(' Conversation deleted successfully');
                     showNotification(`Đã xóa cuộc trò chuyện với ${currentChat.userName}`, 'success');
                     
                     // Clear current chat
@@ -1256,7 +1256,7 @@
                 }
                 
             } catch (error) {
-                console.error('❌ Error deleting conversation:', error);
+                console.error('Error deleting conversation:', error);
                 showNotification('Lỗi khi xóa cuộc trò chuyện: ' + error.message, 'error');
             }
         }

@@ -223,11 +223,11 @@ public class AuthPageController {
         }
 
         String email = auth.getName();
-        System.out.println("✅ Truy cập dashboard với email: " + email);
+        System.out.println(" Truy cập dashboard với email: " + email);
 
         User user = userRepository.findByEmail(email).orElse(null);
         if (user == null) {
-            System.out.println("❌ Không tìm thấy người dùng trong DB.");
+            System.out.println("Không tìm thấy người dùng trong DB.");
             return "redirect:/login";
         }
 

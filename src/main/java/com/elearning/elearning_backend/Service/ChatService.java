@@ -46,12 +46,12 @@ public class ChatService {
         System.out.println("Receiver found: " + receiver.isPresent());
         
         if (sender.isEmpty()) {
-            System.err.println("❌ Sender not found with ID: " + messageDTO.getSenderId());
+            System.err.println("Sender not found with ID: " + messageDTO.getSenderId());
             throw new RuntimeException("Sender not found with ID: " + messageDTO.getSenderId());
         }
         
         if (receiver.isEmpty()) {
-            System.err.println("❌ Receiver not found with ID: " + messageDTO.getReceiverId());
+            System.err.println("Receiver not found with ID: " + messageDTO.getReceiverId());
             throw new RuntimeException("Receiver not found with ID: " + messageDTO.getReceiverId());
         }
         
@@ -95,7 +95,7 @@ public class ChatService {
         broadcastContactUpdate(messageDTO.getSenderId());
         broadcastContactUpdate(messageDTO.getReceiverId());
         
-        System.out.println("✅ ChatService.sendMessage completed successfully");
+        System.out.println(" ChatService.sendMessage completed successfully");
         return result;
     }
     
@@ -183,7 +183,7 @@ public class ChatService {
         if (!conversationMessages.isEmpty()) {
             // Delete all messages in the conversation
             messageRepository.deleteAll(conversationMessages);
-            System.out.println("✅ Successfully deleted " + conversationMessages.size() + " messages");
+            System.out.println(" Successfully deleted " + conversationMessages.size() + " messages");
             
             // Broadcast contact update to both users to refresh their contact lists
             broadcastContactUpdate(userId1);
@@ -292,7 +292,7 @@ public class ChatService {
         // Get teacher's courses first
         Optional<User> teacher = userRepository.findById(teacherId);
         if (teacher.isEmpty()) {
-            System.err.println("❌ Teacher not found with ID: " + teacherId);
+            System.err.println("Teacher not found with ID: " + teacherId);
             return new ArrayList<>();
         }
         

@@ -249,12 +249,12 @@ function loadUserData() {
         return response.json();
     })
     .then(user => {
-        console.log('✅ User data loaded:', user);
+        console.log(' User data loaded:', user);
         currentUser = user;
         updateUserInfo(user);
     })
     .catch(error => {
-        console.error('❌ Error loading user data:', error);
+        console.error('Error loading user data:', error);
         // Set default user info
         updateUserInfo({ name: 'Học viên', email: 'student@example.com' });
     });
@@ -281,7 +281,7 @@ function loadCourses() {
         return response.json();
     })
     .then(courses => {
-        console.log('✅ Courses loaded successfully:', courses);
+        console.log(' Courses loaded successfully:', courses);
         
         allCourses = courses.map(course => ({
             ...course,
@@ -302,7 +302,7 @@ function loadCourses() {
         hideLoading();
     })
     .catch(error => {
-        console.error('❌ Error loading courses:', error);
+        console.error('Error loading courses:', error);
         showError('Không thể tải danh sách khóa học: ' + error.message);
         hideLoading();
     });
@@ -336,7 +336,7 @@ function loadUserEnrollments() {
         return response.json();
     })
     .then(enrollments => {
-        console.log('✅ Enrollments loaded:', enrollments);
+        console.log(' Enrollments loaded:', enrollments);
         userEnrollments = enrollments || [];
         
         // Re-render courses with enrollment status
@@ -348,7 +348,7 @@ function loadUserEnrollments() {
         updateSidebarBadges();
     })
     .catch(error => {
-        console.error('❌ Error loading enrollments:', error);
+        console.error('Error loading enrollments:', error);
         userEnrollments = [];
     });
 }
@@ -466,7 +466,7 @@ function showError(message) {
 function enrollInCourse(courseId) {
     const course = allCourses.find(c => c.id === courseId);
     if (!course) {
-        console.error('❌ Course not found:', courseId);
+        console.error('Course not found:', courseId);
         return;
     }
     
@@ -502,7 +502,7 @@ function enrollInCourse(courseId) {
         return response.json();
     })
     .then(enrollment => {
-        console.log('✅ Enrollment successful:', enrollment);
+        console.log(' Enrollment successful:', enrollment);
         
         // Add to user enrollments
         userEnrollments.push(enrollment);
@@ -524,7 +524,7 @@ function enrollInCourse(courseId) {
         showSuccessMessage(`Đã đăng ký thành công khóa học "${course.title}"`);
     })
     .catch(error => {
-        console.error('❌ Error enrolling in course:', error);
+        console.error('Error enrolling in course:', error);
         
         // Reset button
         if (enrollBtn) {
